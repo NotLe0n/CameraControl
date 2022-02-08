@@ -9,27 +9,26 @@ using Terraria.GameContent;
 using Terraria;
 using Terraria.UI;
 
-namespace CameraControl.UI.Elements
+namespace CameraControl.UI.Elements;
+
+public class UIProgressbar : UIElement
 {
-	public class UIProgressbar : UIElement
+	public float Progress { get; set; }
+
+	protected override void DrawSelf(SpriteBatch spriteBatch)
 	{
-		public float Progress { get; set; }
+		base.DrawSelf(spriteBatch);
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
+		var dim = GetDimensions().ToRectangle();
+
+		spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(dim.X, dim.Y, (int)(dim.Width * Progress), dim.Height), Color.Red); // draw progressbar
+		spriteBatch.DrawRectangleBorder(dim, 2, Color.Black); // draw black border
+
+		// draw percentage and prevent item use on hover
+		if (IsMouseHovering)
 		{
-			base.DrawSelf(spriteBatch);
-
-			var dim = GetDimensions().ToRectangle();
-
-			spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(dim.X, dim.Y, (int)(dim.Width * Progress), dim.Height), Color.Red); // draw progressbar
-			spriteBatch.DrawRectangleBorder(dim, 2, Color.Black); // draw black border
-
-			// draw percentage and prevent item use on hover
-			if (IsMouseHovering)
-			{
-				Main.hoverItemName = Progress + "%";
-				Main.LocalPlayer.mouseInterface = true;
-			}
+			Main.hoverItemName = Progress + "%";
+			Main.LocalPlayer.mouseInterface = true;
 		}
 	}
 }
