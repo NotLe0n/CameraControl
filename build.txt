@@ -1,0 +1,3 @@
+displayName = Camera Control
+author = NotLe0n
+version = 0.1
