@@ -48,8 +48,7 @@ internal class UISystem : ModSystem
 	{
 		_lastUpdateUiGameTime = gameTime;
 
-		if (EditorVisible)
-		{
+		if (EditorVisible) {
 			ccUI.Update(gameTime);
 			ceUI.Update(gameTime);
 		}
@@ -60,24 +59,20 @@ internal class UISystem : ModSystem
 	public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
 	{
 		int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
-		if (mouseTextIndex != -1)
-		{
+		if (mouseTextIndex != -1) {
 			layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
 				"CameraControl: UI",
-				delegate
-				{
+				delegate {
 					if (ccUI.IsVisible)
 						ccUI.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
 					return true;
 				},
 				InterfaceScaleType.UI));
 		}
-		if (mouseTextIndex != -1)
-		{
+		if (mouseTextIndex != -1) {
 			layers.Add(new LegacyGameInterfaceLayer(
 				"CameraControl: CurveDrawArea",
-				delegate
-				{
+				delegate {
 					if (ceUI.IsVisible)
 						ceUI.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
 					return true;

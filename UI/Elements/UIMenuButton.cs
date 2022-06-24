@@ -11,6 +11,8 @@ namespace CameraControl.UI.Elements;
 
 internal class UIMenuButton : UIImageButton
 {
+	public static bool HoveringOverButton { get; private set; }
+
 	public string hoverText;
 	public Func<string> dynamicHoverText;
 	public Func<bool> toggleAction; // changes when the "toggled frame" should be drawn
@@ -43,8 +45,7 @@ internal class UIMenuButton : UIImageButton
 		SoundEngine.PlaySound(SoundID.MenuTick); // tick sound
 		_toggled = !_toggled;
 
-		if (dynamicTexture != null)
-		{
+		if (dynamicTexture != null) {
 			SetImage(Utils.RequestAsset(dynamicTexture()));
 		}
 
@@ -56,16 +57,26 @@ internal class UIMenuButton : UIImageButton
 		base.DrawSelf(spriteBatch);
 
 		// draw a white frame
-		if (toggleAction())
-		{
+		if (toggleAction()) {
 			spriteBatch.Draw(frame, GetDimensions().Position(), Color.White);
 		}
 
 		// draw hover text and prevent item use on hover
-		if (IsMouseHovering)
-		{
+		if (IsMouseHovering) {
 			Main.hoverItemName = dynamicHoverText == null ? hoverText : dynamicHoverText(); // if dynamic hovertext isn't set use the normal hovertext
 			Main.LocalPlayer.mouseInterface = true;
 		}
+	}
+
+	public override void MouseOver(UIMouseEvent evt)
+	{
+		base.MouseOver(evt);
+		HoveringOverButton = true;
+	}
+
+	public override void MouseOut(UIMouseEvent evt)
+	{
+		base.MouseOut(evt);
+		HoveringOverButton = false;
 	}
 }

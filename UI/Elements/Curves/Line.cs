@@ -27,31 +27,25 @@ public class Line
 		var startPointRect = new Rectangle((int)startPoint.X, (int)startPoint.Y, 10, 10);
 		var endPointRect = new Rectangle((int)endPoint.X, (int)endPoint.Y, 10, 10);
 
-		if (Main.mouseLeft)
-		{
-			if (startPointRect.Contains(EditorCameraSystem.RealMouseWorld.ToPoint()))
-			{
+		if (Main.mouseLeft) {
+			if (startPointRect.Contains(EditorCameraSystem.RealMouseWorld.ToPoint())) {
 				// we don't move the control point here because you can lose it if you move your mouse too fast
 				clickedControl = 0;
 			}
-			if (endPointRect.Contains(EditorCameraSystem.RealMouseWorld.ToPoint()))
-			{
+			if (endPointRect.Contains(EditorCameraSystem.RealMouseWorld.ToPoint())) {
 				// we don't move the control point here because you can lose it if you move your mouse too fast
 				clickedControl = 1;
 			}
 
 			// move flagged control point
-			if (clickedControl == 0)
-			{
+			if (clickedControl == 0) {
 				startPoint = EditorCameraSystem.RealMouseWorld;
 			}
-			if (clickedControl == 1)
-			{
+			if (clickedControl == 1) {
 				endPoint = EditorCameraSystem.RealMouseWorld;
 			}
 		}
-		else
-		{
+		else {
 			// if the mouse is released no control point should be moved
 			clickedControl = -1;
 		}

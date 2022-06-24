@@ -27,8 +27,7 @@ internal class HotkeyPlayer : ModPlayer
 {
 	public override void ProcessTriggers(TriggersSet triggersSet)
 	{
-		if (HotkeySystem.OpenUIHotkey.JustPressed)
-		{
+		if (HotkeySystem.OpenUIHotkey.JustPressed) {
 			UISystem.ToggleUI();
 		}
 

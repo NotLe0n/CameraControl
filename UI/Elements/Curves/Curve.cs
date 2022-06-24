@@ -18,7 +18,7 @@ public abstract class Curve
 	public bool Selected => _selected;
 
 	protected const int NumSteps = (int)(1.0f / Factor);
-	protected const float Factor = 0.02f;
+	protected const float Factor = 0.00666f;
 
 	protected Curve(Vector2 start, Vector2 end)
 	{
@@ -34,21 +34,17 @@ public abstract class Curve
 	public void Update(GameTime gameTime)
 	{
 		// if the curve is clicked select it
-		if (Main.mouseLeft)
-		{
+		if (Main.mouseLeft) {
 			_selected = IsHovering;
 		}
 
-		for (int i = 0; i < controls.Length; i++)
-		{
+		for (int i = 0; i < controls.Length; i++) {
 			var rect = new Rectangle((int)controls[i].X - 5, (int)controls[i].Y - 5, 10, 10);
 
 			// if the mouse is hovering over a control point...
-			if (rect.Contains(EditorCameraSystem.RealMouseWorld.ToPoint()))
-			{
+			if (rect.Contains(EditorCameraSystem.RealMouseWorld.ToPoint())) {
 				// ... and it is clicked ...
-				if (Main.mouseLeft)
-				{
+				if (Main.mouseLeft) {
 					// ... flag the control point
 					// we don't move the control point here because you can lose it if you move your mouse too fast
 					clickedControl = i;
@@ -56,8 +52,7 @@ public abstract class Curve
 			}
 
 			// move flagged control point
-			if (clickedControl == i)
-			{
+			if (clickedControl == i) {
 				controls[i] = EditorCameraSystem.RealMouseWorld;
 				_selected = true;
 
@@ -66,8 +61,7 @@ public abstract class Curve
 		}
 
 		// if the mouse is released no control point should be moved
-		if (Main.mouseLeftRelease)
-		{
+		if (Main.mouseLeftRelease) {
 			clickedControl = -1;
 		}
 
@@ -78,8 +72,7 @@ public abstract class Curve
 					  EditorCameraSystem.RealMouseWorld.Y >= min.Y &&
 					  EditorCameraSystem.RealMouseWorld.Y <= min.Y + max.Y;
 
-		if (!inside)
-		{
+		if (!inside) {
 			_isHovering = false;
 			return;
 		}
@@ -89,12 +82,10 @@ public abstract class Curve
 		Vector2 closestPoint = default;
 		float bestDistance = float.MaxValue;
 		float currentDistance;
-		for (int i = 0; i < points.Length; i++)
-		{
+		for (int i = 0; i < points.Length; i++) {
 			// find closest point on the curve to the mouse
 			currentDistance = Vector2.DistanceSquared(points[i], EditorCameraSystem.RealMouseWorld);
-			if (currentDistance < bestDistance)
-			{
+			if (currentDistance < bestDistance) {
 				bestDistance = currentDistance;
 				closestPoint = points[i];
 			}
@@ -102,8 +93,7 @@ public abstract class Curve
 
 		float distance = Vector2.Distance(closestPoint, EditorCameraSystem.RealMouseWorld);
 		const float detectionRange = 50;
-		if (distance > -detectionRange && distance < detectionRange)
-		{
+		if (distance > -detectionRange && distance < detectionRange) {
 			_isHovering = true;
 		}
 	}
@@ -111,10 +101,8 @@ public abstract class Curve
 	public virtual void Draw(SpriteBatch spriteBatch)
 	{
 		// draw control points
-		if (IsHovering || Selected)
-		{
-			foreach (Vector2 control in controls)
-			{
+		if (IsHovering || Selected) {
+			foreach (Vector2 control in controls) {
 				spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)(control.X - 5 - Main.screenPosition.X), (int)(control.Y - 5 - Main.screenPosition.Y), 10, 10), Color.Red);
 			}
 		}
@@ -122,12 +110,11 @@ public abstract class Curve
 		// debug draw
 		//foreach (var pt in points)
 		//{
-		//    spriteBatch.Draw(Game1.solid, new Rectangle((int)pt.X, (int)pt.Y, 10, 10), Color.Green * .3f);
+		//	spriteBatch.Draw(Game1.solid, new Rectangle((int)pt.X, (int)pt.Y, 10, 10), Color.Green * .3f);
 		//}
 
 		// draw points
-		for (int i = 0; i + 1 < points.Length; i++)
-		{
+		for (int i = 0; i + 1 < points.Length; i++) {
 			Vector2 pt = points[i] - Main.screenPosition;
 			Vector2 npt = points[i + 1] - Main.screenPosition;
 

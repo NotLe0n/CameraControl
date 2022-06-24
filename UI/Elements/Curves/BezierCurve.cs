@@ -14,8 +14,7 @@ class BezierCurve : Curve
 
 	public override void PopulatePoints()
 	{
-		for (int i = 0; i <= NumSteps; i++)
-		{
+		for (int i = 0; i <= NumSteps; i++) {
 			float t = i * Factor;
 
 			// calculate points and add them to the list
@@ -28,8 +27,7 @@ class BezierCurve : Curve
 		base.Draw(spriteBatch);
 
 		// draw gray lines from control points 0-1 and 2-3
-		if (IsHovering || Selected)
-		{
+		if (IsHovering || Selected) {
 			spriteBatch.DrawLine(controls[0], controls[1], 1, Color.LightGray);
 			spriteBatch.DrawLine(controls[2], controls[3], 1, Color.LightGray);
 		}

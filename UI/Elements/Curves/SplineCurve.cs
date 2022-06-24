@@ -12,7 +12,7 @@ class SplineCurve : Curve
 		prevPoint = controls[0];
 		nextPoint = controls[3];
 
-		points = new Vector2[NumSteps * 3 + 1];
+		points = new Vector2[NumSteps /* * 3*/ + 1];
 		PopulatePoints();
 	}
 
@@ -20,13 +20,13 @@ class SplineCurve : Curve
 	{
 		// calculation only goes from point 1-2 with points 0 and 3 being "control points"
 		// to still be able to see a connection from 0-1 and 2-3 we calculate 2 more times with the control points from another curve (gets updated in CurveDrawArea.FixSplineEndings())
-		for (int i = 0; i <= NumSteps; i++)
-		{
-			float t = i * Factor;
+		for (int i = 0; i <= NumSteps / 3; i++) {
+			float t = i * Factor * 3;
 
-			points[i + NumSteps * 0] = CalculateCatmullRomSpline(t, prevPoint, controls[0], controls[1], controls[2]);
-			points[i + NumSteps * 1] = CalculateCatmullRomSpline(t, controls[0], controls[1], controls[2], controls[3]);
-			points[i + NumSteps * 2] = CalculateCatmullRomSpline(t, controls[1], controls[2], controls[3], nextPoint);
+			//points[i] = CalculateCatmullRomSpline(t, controls[0], controls[1], controls[2], controls[3]);
+			points[i] = CalculateCatmullRomSpline(t, prevPoint, controls[0], controls[1], controls[2]);
+			points[i + NumSteps / 3] = CalculateCatmullRomSpline(t, controls[0], controls[1], controls[2], controls[3]);
+			points[i + NumSteps / 3 * 2] = CalculateCatmullRomSpline(t, controls[1], controls[2], controls[3], nextPoint);
 		}
 	}
 

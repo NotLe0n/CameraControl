@@ -9,6 +9,7 @@ using Terraria;
 using Terraria.GameContent;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
+using CameraControl.UI.Elements;
 
 namespace CameraControl.UI;
 
@@ -27,37 +28,31 @@ class CurveEditUI : UIState
 
 	public override void Update(GameTime gameTime)
 	{
-		if (drawingMode && !CameraControlUI.HoveringOverButton)
-		{
+		if (drawingMode && !UIMenuButton.HoveringOverButton) {
 			Main.LocalPlayer.mouseInterface = true;
 
 			Vector2 lastCurveEnd = curves.Count == 0 ? EditorCameraSystem.RealMouseWorld : curves[^1].controls[^1];
 
-			if (Main.mouseLeft && _drawingCurve == null)
-			{
+			if (Main.mouseLeft && _drawingCurve == null) {
 				_drawingCurve = new Line(lastCurveEnd, EditorCameraSystem.RealMouseWorld, Color.Orange);
 			}
 
-			if (Main.mouseLeftRelease && _drawingCurve != null)
-			{
+			if (Main.mouseLeftRelease && _drawingCurve != null) {
 				AddCurve(_drawingCurve.startPoint, EditorCameraSystem.RealMouseWorld, curveType);
 			}
 		}
 
-		if (erasing)
-		{
+		if (erasing) {
 			Main.LocalPlayer.mouseInterface = true;
 
-			if (Main.mouseLeft)
-			{
+			if (Main.mouseLeft) {
 				curves.RemoveAll(x => x.IsHovering);
 			}
 		}
 
 		FixSplineEndings();
 		_drawingCurve?.Update(gameTime);
-		foreach (var curve in curves)
-		{
+		foreach (var curve in curves) {
 			curve.Update(gameTime);
 		}
 
@@ -71,16 +66,14 @@ class CurveEditUI : UIState
 		spriteBatch.DrawString(FontAssets.MouseText.Value, "Curve Type: " + curveType, new Vector2(10, 80), Color.White);
 
 		_drawingCurve?.Draw(spriteBatch);
-		foreach (var curve in curves)
-		{
+		foreach (var curve in curves) {
 			curve.Draw(spriteBatch);
 		}
 	}
 
 	private void AddCurve(Vector2 start, Vector2 end, CurveType type)
 	{
-		switch (type)
-		{
+		switch (type) {
 			case CurveType.Bezier:
 				curves.Add(new BezierCurve(start, end));
 				break;
@@ -96,10 +89,8 @@ class CurveEditUI : UIState
 
 	private void FixSplineEndings()
 	{
-		for (int i = 0; i < curves.Count; i++)
-		{
-			if (curves[i] is SplineCurve curve)
-			{
+		for (int i = 0; i < curves.Count; i++) {
+			if (curves[i] is SplineCurve curve) {
 				if (i - 1 > 0)
 					curve.prevPoint = curves[i - 1].controls[2];
 				if (i + 1 < curves.Count)

@@ -9,12 +9,11 @@ namespace CameraControl;
 
 internal class CameraSystem : ModSystem
 {
-	public static bool Playing
-	{
+	public static bool Playing {
 		get => _playing;
-		set
-		{
+		set {
 			Reset();
+			UpdateProgressbar(0, 0);
 			_playing = value;
 		}
 	}
@@ -36,8 +35,7 @@ internal class CameraSystem : ModSystem
 	{
 		base.ModifyScreenPosition();
 
-		if (!_playing)
-		{
+		if (!_playing) {
 			// track NPC if not playing
 			if (trackingEntity != null)
 				CenterCameraTo(trackingEntity.position);
@@ -48,8 +46,7 @@ internal class CameraSystem : ModSystem
 		var curves = UISystem.CurveEditUI.curves;
 
 		// don't track curve if there are none
-		if (curves.Count == 0)
-		{
+		if (curves.Count == 0) {
 			_playing = false;
 
 			// reset progress to 0
@@ -61,16 +58,14 @@ internal class CameraSystem : ModSystem
 		Vector2 start = curves[currentCurve].points[segment];
 		Vector2 end;
 
-		if (!reverse)
-		{
+		if (!reverse) {
 			bool segmentEnd = segment + 1 >= curves[currentCurve].points.Length; // is the last segment reached?
 			end = segmentEnd ? start : curves[currentCurve].points[segment + 1]; // if yes, go to start, if no go to next segment
 
 			CenterCameraTo(Vector2.Lerp(start, end, t)); // move screen
 			TrackForwards(curves, start, end); // update variables
 		}
-		else
-		{
+		else {
 			bool segmentEnd = segment - 1 < 0; // is the last segment reached?
 			end = segmentEnd ? start : curves[currentCurve].points[segment - 1]; // if yes, go to start, if no go to next segment
 
@@ -90,31 +85,27 @@ internal class CameraSystem : ModSystem
 		t += 0.1f / Vector2.Distance(start, end) * speed;
 
 		// if we reached the end of a line segment, reset t and go to the next segment
-		if (t > 1 || Main.screenPosition == end - middle)
-		{
+		if (t > 1 || Main.screenPosition == end - middle) {
 			segment++;
 			t = 0;
 			progress++;
 		}
 
 		// if we reached the end of the last segment, reset segment and go the the next curve
-		if (segment >= curves[currentCurve].points.Length)
-		{
+		if (segment >= curves[currentCurve].points.Length) {
 			segment = 0;
 			currentCurve++;
 			progress++;
 		}
 
 		// if we reached the end of the last curve, reset currentCurve and stop playing
-		if (currentCurve >= curves.Count)
-		{
+		if (currentCurve >= curves.Count) {
 			currentCurve = 0;
 			_playing = repeat || bounce; // if repeat or bounce isn't set: stop playing
 			progress = 0;
 
 			// if bounce is set: reverse tracking
-			if (bounce)
-			{
+			if (bounce) {
 				reverse = true;
 				t = 1;
 				segment = curves[currentCurve].points.Length - 1;
@@ -130,24 +121,21 @@ internal class CameraSystem : ModSystem
 		t -= 0.1f / Math.Max(Vector2.Distance(start, end), 1) * speed;
 
 		// if we reached the end of a line segment, reset t and go to the next segment
-		if (t <= 0)
-		{
+		if (t <= 0) {
 			segment--;
 			t = 1;
 			progress--;
 		}
 
 		// if we reached the end of the last segment, reset segment and go the the next curve
-		if (segment < 0)
-		{
+		if (segment < 0) {
 			segment = curves[currentCurve].points.Length - 1;
 			currentCurve--;
 			progress--;
 		}
 
 		// if we reached the end of the last curve, reset currentCurve and stop playing
-		if (currentCurve < 0)
-		{
+		if (currentCurve < 0) {
 			currentCurve = curves.Count - 1;
 			_playing = repeat || bounce; // if repeat or bounce isn't set: stop playing
 
@@ -161,13 +149,14 @@ internal class CameraSystem : ModSystem
 		UISystem.CameraControlUI.progressBar.Progress = progress / segments / curveCount;
 	}
 
-	private static void Reset()
+	public static void Reset()
 	{
 		t = 0;
 		segment = 0;
 		currentCurve = 0;
 		progress = 0;
 		reverse = false;
+		UpdateProgressbar(0, 0);
 	}
 
 	public static void SetSpeed(float speed)
@@ -182,6 +171,13 @@ internal class CameraSystem : ModSystem
 
 	public static Vector2 GetPositionAtPercentage(float percentage)
 	{
-		return Vector2.Zero;
+		return UISystem.CurveEditUI.curves[currentCurve].points[segment];
+	}
+
+	public static void StopPlaying()
+	{
+		Reset();
+		UpdateProgressbar(0, 0);
+		_playing = false;
 	}
 }

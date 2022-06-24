@@ -14,7 +14,6 @@ namespace CameraControl.UI;
 
 internal class CameraControlUI : UIState
 {
-	public static bool HoveringOverButton { get; private set; }
 	public UIProgressbar progressBar; // progressbar instance
 
 	private bool drawView; // if true, draws big box representing the screen at a tracking location with 100% zoom
@@ -25,8 +24,7 @@ internal class CameraControlUI : UIState
 
 	public CameraControlUI()
 	{
-		progressBar = new UIProgressbar()
-		{
+		progressBar = new UIProgressbar() {
 			Top = new(-150, 1),
 			Left = new(0, hAlign),
 			Width = new(450, 0),
@@ -35,110 +33,98 @@ internal class CameraControlUI : UIState
 		Append(progressBar);
 
 		var startBtn = new UIMenuButton(
-			() => $"{path + (CameraSystem.Playing ? "stopBtn" : "playBtn")}",
-			() => $"{(CameraSystem.Playing ? "Stop" : "Start")} Tracking")
-		{
+			() => $"{path + (!CameraSystem.Playing ? "stopBtn" : "playBtn")}",
+			() => $"{(CameraSystem.Playing ? "Stop" : "Start")} Tracking") {
 			Top = new(-120, 1),
 			Left = new(0, hAlign)
 		};
 		startBtn.toggleAction = () => CameraSystem.Playing; // draw frame only while tracking the curve
-		startBtn.OnClick += (_, __) => CameraSystem.Playing = !CameraSystem.Playing;
-		startBtn.OnMouseOver += StartHoveringButton;
-		startBtn.OnMouseOut += StopHoveringButton;
+		startBtn.OnClick += StartBtn_OnClick;
 		Append(startBtn);
 
-		var repeatBtn = new UIMenuButton(path + "repeatBtn", "Repeat")
-		{
+		var repeatBtn = new UIMenuButton(path + "repeatBtn", "Repeat") {
 			Top = new(-120, 1),
 			Left = new(50, hAlign)
 		};
 		repeatBtn.OnClick += (_, __) => CameraSystem.repeat = !CameraSystem.repeat;
-		repeatBtn.OnMouseOver += StartHoveringButton;
-		repeatBtn.OnMouseOut += StopHoveringButton;
 		Append(repeatBtn);
 
-		var bounceBtn = new UIMenuButton(path + "bounceBtn", "Bounce")
-		{
+		var bounceBtn = new UIMenuButton(path + "bounceBtn", "Bounce") {
 			Top = new(-120, 1),
 			Left = new(100, hAlign)
 		};
 		bounceBtn.OnClick += (_, __) => CameraSystem.bounce = !CameraSystem.bounce;
-		bounceBtn.OnMouseOver += StartHoveringButton;
-		bounceBtn.OnMouseOut += StopHoveringButton;
 		Append(bounceBtn);
+
+		var pauseBtn = new UIMenuButton(path + "pauseBtn", "Pause") {
+			Top = new(-70, 1),
+			Left = new(50, hAlign)
+		};
+		pauseBtn.OnClick += (_, __) => CameraSystem.Playing = !CameraSystem.Playing;
+		Append(pauseBtn);
 
 		///////
 
-		var showViewBtn = new UIMenuButton(path + "showViewBtn", "Show View Range")
-		{
+		var showViewBtn = new UIMenuButton(path + "showViewBtn", "Show View Range") {
 			Top = new(-120, 1),
 			Left = new(180, hAlign)
 		};
 		showViewBtn.OnClick += ShowViewBtn_OnClick;
-		showViewBtn.OnMouseOver += StartHoveringButton;
-		showViewBtn.OnMouseOut += StopHoveringButton;
 		Append(showViewBtn);
 
 		//////
 
-		var bezierBtn = new UIMenuButton(path + "bezierBtn", "Draw Bezier curve")
-		{
+		var bezierBtn = new UIMenuButton(path + "bezierBtn", "Draw Bezier curve") {
 			Top = new(-120, 1),
 			Left = new(300, hAlign)
 		};
 		bezierBtn.OnClick += (_, __) => ToggleCurveType(CurveEditUI.CurveType.Bezier);
-		bezierBtn.OnMouseOver += StartHoveringButton;
-		bezierBtn.OnMouseOut += StopHoveringButton;
 		Append(bezierBtn);
 
-		var splineBtn = new UIMenuButton(path + "splineBtn", "Draw Spline curve")
-		{
+		var splineBtn = new UIMenuButton(path + "splineBtn", "Draw Spline curve") {
 			Top = new(-120, 1),
 			Left = new(350, hAlign)
 		};
 		splineBtn.OnClick += (_, __) => ToggleCurveType(CurveEditUI.CurveType.Spline);
-		splineBtn.OnMouseOver += StartHoveringButton;
-		splineBtn.OnMouseOut += StopHoveringButton;
 		Append(splineBtn);
 
 		var entityBtn = new UIMenuButton(path + "entityBtn",
-			() => $" {(CameraSystem.trackingEntity == null ? "Start" : "Stop")} Tracking Entity")
-		{
+			() => $" {(CameraSystem.trackingEntity == null ? "Start" : "Stop")} Tracking Entity") {
 			Top = new(-120, 1),
 			Left = new(400, hAlign)
 		};
 		entityBtn.toggleAction = () => CameraSystem.trackingEntity != null; // draw frame only while tracking a npc
 		entityBtn.OnClick += EntityBtn_OnClick;
-		entityBtn.OnMouseOver += StartHoveringButton;
-		entityBtn.OnMouseOut += StopHoveringButton;
 		Append(entityBtn);
 
 		//////
 
-		var eraseBtn = new UIMenuButton(path + "eraseBtn", "Erase curve")
-		{
+		var eraseBtn = new UIMenuButton(path + "eraseBtn", "Erase curve") {
 			Top = new(-70, 1),
 			Left = new(320, hAlign)
 		};
 		eraseBtn.OnClick += EraseBtn_OnClick;
-		eraseBtn.OnMouseOver += StartHoveringButton;
-		eraseBtn.OnMouseOut += StopHoveringButton;
 		Append(eraseBtn);
 
-		var deleteAllBtn = new UIMenuButton(path + "deleteAllBtn", "Delete all curves")
-		{
+		var deleteAllBtn = new UIMenuButton(path + "deleteAllBtn", "Delete all curves") {
 			Top = new(-70, 1),
 			Left = new(370, hAlign)
 		};
 		deleteAllBtn.toggleAction = () => false;
 		deleteAllBtn.OnClick += DeleteAllBtn_OnClick;
-		deleteAllBtn.OnMouseOver += StartHoveringButton;
-		deleteAllBtn.OnMouseOut += StopHoveringButton;
 		Append(deleteAllBtn);
 	}
 
-	private void StopHoveringButton(UIMouseEvent evt, UIElement listeningElement) => HoveringOverButton = false;
-	private void StartHoveringButton(UIMouseEvent evt, UIElement listeningElement) => HoveringOverButton = true;
+	private void StartBtn_OnClick(UIMouseEvent evt, UIElement listeningElement)
+	{
+		if (CameraSystem.Playing) {
+			CameraSystem.StopPlaying();
+			EditorCameraSystem.CenterToPosition(Main.LocalPlayer.position);
+		}
+		else {
+			CameraSystem.Playing = true;
+		}
+	}
 
 	private void DeleteAllBtn_OnClick(UIMouseEvent evt, UIElement listeningElement)
 	{
@@ -161,10 +147,11 @@ internal class CameraControlUI : UIState
 	private void EntityBtn_OnClick(UIMouseEvent evt, UIElement listeningElement)
 	{
 		// select entity if you aren't tracking one
-		if (CameraSystem.trackingEntity == null)
-		{
-			Main.NewText("Click on the enity you want to track");
-			selectNpcToTrack = true;
+		if (CameraSystem.trackingEntity == null) {
+			selectNpcToTrack = !selectNpcToTrack;
+			if (selectNpcToTrack) {
+				Main.NewText("Click on the enity you want to track");
+			}
 
 			return;
 		}
@@ -178,8 +165,7 @@ internal class CameraControlUI : UIState
 		var instance = UISystem.CurveEditUI;
 
 		// disable drawing mode if already drawing with the same curve type
-		if (instance.drawingMode && instance.curveType == curveType)
-		{
+		if (instance.drawingMode && instance.curveType == curveType) {
 			instance.drawingMode = false;
 			return;
 		}
@@ -193,26 +179,29 @@ internal class CameraControlUI : UIState
 	{
 		base.Draw(spriteBatch);
 
-		if (drawView)
-		{
+		if (drawView) {
 			// TODO: make preview border
 
+			int sw = Main.screenWidth;
+			int sh = Main.screenHeight;
+			float z = EditorCameraSystem.zoom;
+
 			Vector2 center = new Vector2(Main.screenWidth, Main.screenHeight) / 2;
-			Vector2 pos = CameraSystem.GetPositionAtPercentage(progressBar.Progress) - center * EditorCameraSystem.zoom;
+			Vector2 offset = new Vector2(sw - sw * z, sh - sh * z) / 2;
+
+			Vector2 pos = CameraSystem.GetPositionAtPercentage(progressBar.Progress);
 
 			spriteBatch.DrawRectangleBorder(new Rectangle(
-					(int)(pos.X - Main.screenPosition.X),
-					(int)(pos.Y - Main.screenPosition.Y),
-					(int)(Main.screenWidth * EditorCameraSystem.zoom),
-					(int)(Main.screenHeight * EditorCameraSystem.zoom)),
+					(int)((pos.X - Main.screenPosition.X - center.X) * z + offset.X),
+					(int)((pos.Y - Main.screenPosition.Y - center.Y) * z + offset.Y),
+					(int)(sw * z),
+					(int)(sh * z)),
 				2, Color.Gray);
 		}
 
-		if (selectNpcToTrack)
-		{
+		if (selectNpcToTrack) {
 			var enities = Main.npc.AsEnumerable<Entity>().Concat(Main.item).Concat(Main.projectile);
-			foreach (Entity entity in enities.Where(e => e.active))
-			{
+			foreach (Entity entity in enities.Where(e => e.active)) {
 				spriteBatch.Draw(TextureAssets.MagicPixel.Value, (entity.position - Main.screenPosition), entity.Hitbox, Color.Green * .5f, 0, Vector2.Zero, EditorCameraSystem.zoom, SpriteEffects.None, 0);
 			}
 		}
@@ -220,13 +209,10 @@ internal class CameraControlUI : UIState
 
 	public override void Update(GameTime gameTime)
 	{
-		if (selectNpcToTrack)
-		{
+		if (selectNpcToTrack) {
 			var enities = Main.npc.AsEnumerable<Entity>().Concat(Main.item).Concat(Main.projectile);
-			foreach (Entity entity in enities.Where(e => e.active))
-			{
-				if (entity.Hitbox.Contains(Main.MouseWorld.ToPoint()) && Main.mouseLeft)
-				{
+			foreach (Entity entity in enities.Where(e => e.active)) {
+				if (entity.Hitbox.Contains(Main.MouseWorld.ToPoint()) && Main.mouseLeft) {
 					selectNpcToTrack = false;
 					CameraSystem.trackingEntity = entity;
 				}

@@ -25,8 +25,7 @@ public class UIProgressbar : UIElement
 		spriteBatch.DrawRectangleBorder(dim, 2, Color.Black); // draw black border
 
 		// draw percentage and prevent item use on hover
-		if (IsMouseHovering)
-		{
+		if (IsMouseHovering) {
 			Main.hoverItemName = Progress + "%";
 			Main.LocalPlayer.mouseInterface = true;
 		}

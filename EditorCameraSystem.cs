@@ -15,31 +15,25 @@ internal class EditorCameraSystem : ModSystem
 
 	public override void ModifyScreenPosition()
 	{
-		if (UISystem.EditorVisible && !CameraSystem.Playing && CameraSystem.trackingEntity == null)
-		{
+		if (UISystem.EditorVisible && !CameraSystem.Playing && CameraSystem.trackingEntity == null) {
 			Main.LocalPlayer.frozen = true;
 
-			if (Main.keyState.IsKeyDown(Keys.W))
-			{
+			if (Main.keyState.IsKeyDown(Keys.W)) {
 				position.Y -= 10;
 			}
-			if (Main.keyState.IsKeyDown(Keys.S))
-			{
+			if (Main.keyState.IsKeyDown(Keys.S)) {
 				position.Y += 10;
 			}
-			if (Main.keyState.IsKeyDown(Keys.A))
-			{
+			if (Main.keyState.IsKeyDown(Keys.A)) {
 				position.X -= 10;
 			}
-			if (Main.keyState.IsKeyDown(Keys.D))
-			{
+			if (Main.keyState.IsKeyDown(Keys.D)) {
 				position.X += 10;
 			}
 
 			Main.screenPosition = position;
 		}
-		else
-		{
+		else {
 			position = Main.screenPosition;
 		}
 	}
@@ -48,8 +42,7 @@ internal class EditorCameraSystem : ModSystem
 	public static float zoom = 1;
 	public override void ModifyTransformMatrix(ref SpriteViewMatrix Transform)
 	{
-		if (UISystem.EditorVisible)
-		{
+		if (UISystem.EditorVisible) {
 			float val = (Mouse.GetState().ScrollWheelValue - lastScrollwheel) / 4000.0f;
 			zoom += val;
 			zoom = MathHelper.Clamp(zoom, 0.4f, 2f);
@@ -59,5 +52,15 @@ internal class EditorCameraSystem : ModSystem
 
 		base.ModifyTransformMatrix(ref Transform);
 		lastScrollwheel = Mouse.GetState().ScrollWheelValue;
+	}
+
+	public static void MoveToPosition(Vector2 pos)
+	{
+		position = pos;
+	}
+
+	public static void CenterToPosition(Vector2 pos)
+	{
+		position = pos - new Vector2(Main.screenWidth, Main.screenHeight) / 2;
 	}
 }
