@@ -73,14 +73,16 @@ internal class CameraControlUI : UIState
 
 		var bezierBtn = new UIMenuButton(path + "bezierBtn", "Draw Bezier curve") {
 			Top = new(-120, 1),
-			Left = new(300, hAlign)
+			Left = new(300, hAlign),
+			toggleAction = () => UISystem.CurveEditUI.curveType == CurveEditUI.CurveType.Bezier && UISystem.CurveEditUI.drawingMode
 		};
 		bezierBtn.OnClick += (_, __) => ToggleCurveType(CurveEditUI.CurveType.Bezier);
 		Append(bezierBtn);
 
 		var splineBtn = new UIMenuButton(path + "splineBtn", "Draw Spline curve") {
 			Top = new(-120, 1),
-			Left = new(350, hAlign)
+			Left = new(350, hAlign),
+			toggleAction = () => UISystem.CurveEditUI.curveType == CurveEditUI.CurveType.Spline && UISystem.CurveEditUI.drawingMode
 		};
 		splineBtn.OnClick += (_, __) => ToggleCurveType(CurveEditUI.CurveType.Spline);
 		Append(splineBtn);
@@ -98,7 +100,8 @@ internal class CameraControlUI : UIState
 
 		var eraseBtn = new UIMenuButton(path + "eraseBtn", "Erase curve") {
 			Top = new(-70, 1),
-			Left = new(320, hAlign)
+			Left = new(320, hAlign),
+			toggleAction = () => UISystem.CurveEditUI.erasing
 		};
 		eraseBtn.OnClick += EraseBtn_OnClick;
 		Append(eraseBtn);
@@ -184,7 +187,7 @@ internal class CameraControlUI : UIState
 			Vector2 center = new Vector2(sw, sh) / 2;
 			Vector2 offset = new Vector2(sw - sw * z, sh - sh * z) / 2;
 
-			Vector2 pos = CameraSystem.GetPositionAtPercentage(progressBar.Progress);
+			Vector2 pos = (UISystem.CurveEditUI.curves.Count > 0) ? CameraSystem.GetPositionAtPercentage(progressBar.Progress) : Main.screenPosition + center;
 
 			var borderRect = new Rectangle(
 					(int)((pos.X - Main.screenPosition.X - center.X) * z + offset.X),
@@ -204,7 +207,8 @@ internal class CameraControlUI : UIState
 
 			// loop through all active entities
 			foreach (Entity entity in enities.Where(e => e.active)) {
-				spriteBatch.Draw(TextureAssets.MagicPixel.Value, (entity.position - Main.screenPosition), entity.Hitbox, Color.Green * .5f, 0, Vector2.Zero, EditorCameraSystem.zoom, SpriteEffects.None, 0);
+				var p = entity.position - Main.screenPosition;
+				spriteBatch.Draw(TextureAssets.MagicPixel.Value, p, entity.Hitbox, Color.Green * .5f, 0, Vector2.Zero, EditorCameraSystem.zoom, SpriteEffects.None, 0);
 			}
 		}
 	}

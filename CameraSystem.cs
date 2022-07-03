@@ -137,6 +137,10 @@ internal class CameraSystem : ModSystem
 	// calculate progress percentage and update progressbar
 	private static void UpdateProgressbar(int segments, int curveCount)
 	{
+		if (curveCount == 0) {
+			return;
+		}
+
 		UISystem.CameraControlUI.progressBar.Progress = progress / segments / curveCount;
 	}
 
@@ -162,9 +166,6 @@ internal class CameraSystem : ModSystem
 
 	public static Vector2 GetPositionAtPercentage(float percentage)
 	{
-		if (!playing)
-			return Vector2.Zero;
-
 		int curveCount = UISystem.CurveEditUI.curves.Count;
 		var curve = UISystem.CurveEditUI.curves[Math.Min((int)(percentage * curveCount), curveCount - 1)];
 		float t = (percentage * curveCount) % 1;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.Graphics;
 using Terraria.ModLoader;
 
@@ -42,6 +43,8 @@ internal class EditorCameraSystem : ModSystem
 	public override void ModifyTransformMatrix(ref SpriteViewMatrix Transform)
 	{
 		if (UISystem.EditorVisible) {
+			PlayerInput.LockVanillaMouseScroll("ModLoader/UIGrid");
+
 			float val = (Mouse.GetState().ScrollWheelValue - lastScrollwheel) / 4000.0f;
 			zoom += val;
 			zoom = MathHelper.Clamp(zoom, 0.4f, 2f);
