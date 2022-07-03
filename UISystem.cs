@@ -1,12 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using CameraControl.UI;
+using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using System.Linq;
-using CameraControl.UI;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
-using Terraria.Graphics;
 
 namespace CameraControl;
 

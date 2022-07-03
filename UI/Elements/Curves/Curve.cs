@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
 using Terraria;
+using Terraria.GameContent;
 
 namespace CameraControl.UI.Elements.Curves;
 
@@ -91,6 +91,7 @@ public abstract class Curve
 			}
 		}
 
+		// mouse is hovering if it's within 50 pixels of the closest point to the mouse
 		float distance = Vector2.Distance(closestPoint, EditorCameraSystem.RealMouseWorld);
 		const float detectionRange = 50;
 		if (distance > -detectionRange && distance < detectionRange) {
@@ -106,12 +107,6 @@ public abstract class Curve
 				spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)(control.X - 5 - Main.screenPosition.X), (int)(control.Y - 5 - Main.screenPosition.Y), 10, 10), Color.Red);
 			}
 		}
-
-		// debug draw
-		//foreach (var pt in points)
-		//{
-		//	spriteBatch.Draw(Game1.solid, new Rectangle((int)pt.X, (int)pt.Y, 10, 10), Color.Green * .3f);
-		//}
 
 		// draw points
 		for (int i = 0; i + 1 < points.Length; i++) {

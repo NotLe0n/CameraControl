@@ -12,7 +12,7 @@ class SplineCurve : Curve
 		prevPoint = controls[0];
 		nextPoint = controls[3];
 
-		points = new Vector2[NumSteps /* * 3*/ + 1];
+		points = new Vector2[NumSteps + 1];
 		PopulatePoints();
 	}
 

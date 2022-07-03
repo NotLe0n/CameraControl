@@ -1,14 +1,11 @@
-﻿using System;
+﻿using CameraControl.UI.Elements;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework;
-using CameraControl.UI.Elements;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
-using Terraria.GameContent.UI.Elements;
-using Terraria.ModLoader;
-using Terraria.UI;
 using Terraria;
+using Terraria.GameContent;
+using Terraria.UI;
 
 namespace CameraControl.UI;
 
@@ -180,13 +177,11 @@ internal class CameraControlUI : UIState
 		base.Draw(spriteBatch);
 
 		if (drawView) {
-			// TODO: make preview border
-
 			int sw = Main.screenWidth;
 			int sh = Main.screenHeight;
 			float z = EditorCameraSystem.zoom;
 
-			Vector2 center = new Vector2(Main.screenWidth, Main.screenHeight) / 2;
+			Vector2 center = new Vector2(sw, sh) / 2;
 			Vector2 offset = new Vector2(sw - sw * z, sh - sh * z) / 2;
 
 			Vector2 pos = CameraSystem.GetPositionAtPercentage(progressBar.Progress);
@@ -204,7 +199,10 @@ internal class CameraControlUI : UIState
 		}
 
 		if (selectNpcToTrack) {
-			var enities = Main.npc.AsEnumerable<Entity>().Concat(Main.item).Concat(Main.projectile);
+			// all NPCs, Items, and Projectiles
+			IEnumerable<Entity> enities = Main.npc.AsEnumerable<Entity>().Concat(Main.item).Concat(Main.projectile);
+
+			// loop through all active entities
 			foreach (Entity entity in enities.Where(e => e.active)) {
 				spriteBatch.Draw(TextureAssets.MagicPixel.Value, (entity.position - Main.screenPosition), entity.Hitbox, Color.Green * .5f, 0, Vector2.Zero, EditorCameraSystem.zoom, SpriteEffects.None, 0);
 			}
@@ -214,11 +212,16 @@ internal class CameraControlUI : UIState
 	public override void Update(GameTime gameTime)
 	{
 		if (selectNpcToTrack) {
-			var enities = Main.npc.AsEnumerable<Entity>().Concat(Main.item).Concat(Main.projectile);
+			// all NPCs, Items, and Projectiles
+			IEnumerable<Entity> enities = Main.npc.AsEnumerable<Entity>().Concat(Main.item).Concat(Main.projectile);
+
+			// loop through all active entities
 			foreach (Entity entity in enities.Where(e => e.active)) {
+
+				// if mouse clicked inside hitbox of the entity
 				if (entity.Hitbox.Contains(Main.MouseWorld.ToPoint()) && Main.mouseLeft) {
-					selectNpcToTrack = false;
-					CameraSystem.trackingEntity = entity;
+					selectNpcToTrack = false; // stop selecting
+					CameraSystem.trackingEntity = entity; // start tracking
 				}
 			}
 		}
