@@ -15,7 +15,7 @@ internal class EditorCameraSystem : ModSystem
 
 	public override void ModifyScreenPosition()
 	{
-		if (UISystem.EditorVisible && !CameraSystem.Playing && CameraSystem.trackingEntity == null) {
+		if (UISystem.EditorVisible && !CameraSystem.IsPlaying() && CameraSystem.trackingEntity == null) {
 			Main.LocalPlayer.frozen = true;
 
 			if (Main.keyState.IsKeyDown(Keys.W)) {

@@ -33,7 +33,7 @@ class BezierCurve : Curve
 		}
 	}
 
-	private static Vector2 CalculateBezierCurve(float t, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
+	public static Vector2 CalculateBezierCurve(float t, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
 	{
 		return MathF.Pow(1 - t, 3) * p0 +
 			3 * MathF.Pow(1 - t, 2) * t * p1 +

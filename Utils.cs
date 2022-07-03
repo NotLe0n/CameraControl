@@ -77,4 +77,14 @@ public static class Utils
 				rect.Height),
 			color);
 	}
+
+	public static void DrawStraightLine(this SpriteBatch spriteBatch, int x, int y, int w, int h, Color color)
+	{
+		spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(x, y, w, h), color);
+	}
+
+	public static void DrawHorzontalLine(this SpriteBatch spriteBatch, float x, float y, float w, float h, Color color)
+	{
+		spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int)x, (int)y, (int)w, (int)h), color);
+	}
 }

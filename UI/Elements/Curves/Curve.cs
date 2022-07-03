@@ -17,8 +17,8 @@ public abstract class Curve
 	private bool _selected;
 	public bool Selected => _selected;
 
-	protected const int NumSteps = (int)(1.0f / Factor);
-	protected const float Factor = 0.00666f;
+	public const int NumSteps = (int)(1.0f / Factor);
+	public const float Factor = 0.00666f;
 
 	protected Curve(Vector2 start, Vector2 end)
 	{

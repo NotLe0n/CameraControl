@@ -32,15 +32,15 @@ internal class CameraControlUI : UIState
 		};
 		Append(progressBar);
 
-		var startBtn = new UIMenuButton(
-			() => $"{path + (!CameraSystem.Playing ? "stopBtn" : "playBtn")}",
-			() => $"{(CameraSystem.Playing ? "Stop" : "Start")} Tracking") {
+		var startStopBtn = new UIMenuButton(
+				() => $"{path + (!CameraSystem.IsPlaying() ? "stopBtn" : "playBtn")}",
+				() => $"{(CameraSystem.IsPlaying() ? "Stop" : "Start")} Tracking") {
 			Top = new(-120, 1),
-			Left = new(0, hAlign)
+			Left = new(0, hAlign),
+			toggleAction = () => CameraSystem.IsPlaying() // draw frame only while tracking the curve
 		};
-		startBtn.toggleAction = () => CameraSystem.Playing; // draw frame only while tracking the curve
-		startBtn.OnClick += StartBtn_OnClick;
-		Append(startBtn);
+		startStopBtn.OnClick += StartBtn_OnClick;
+		Append(startStopBtn);
 
 		var repeatBtn = new UIMenuButton(path + "repeatBtn", "Repeat") {
 			Top = new(-120, 1),
@@ -60,7 +60,7 @@ internal class CameraControlUI : UIState
 			Top = new(-70, 1),
 			Left = new(50, hAlign)
 		};
-		pauseBtn.OnClick += (_, __) => CameraSystem.Playing = !CameraSystem.Playing;
+		pauseBtn.OnClick += (_, __) => CameraSystem.TogglePause();
 		Append(pauseBtn);
 
 		///////
@@ -91,9 +91,9 @@ internal class CameraControlUI : UIState
 		var entityBtn = new UIMenuButton(path + "entityBtn",
 			() => $" {(CameraSystem.trackingEntity == null ? "Start" : "Stop")} Tracking Entity") {
 			Top = new(-120, 1),
-			Left = new(400, hAlign)
+			Left = new(400, hAlign),
+			toggleAction = () => CameraSystem.trackingEntity != null // draw frame only while tracking a npc
 		};
-		entityBtn.toggleAction = () => CameraSystem.trackingEntity != null; // draw frame only while tracking a npc
 		entityBtn.OnClick += EntityBtn_OnClick;
 		Append(entityBtn);
 
@@ -108,21 +108,21 @@ internal class CameraControlUI : UIState
 
 		var deleteAllBtn = new UIMenuButton(path + "deleteAllBtn", "Delete all curves") {
 			Top = new(-70, 1),
-			Left = new(370, hAlign)
+			Left = new(370, hAlign),
+			toggleAction = () => false
 		};
-		deleteAllBtn.toggleAction = () => false;
 		deleteAllBtn.OnClick += DeleteAllBtn_OnClick;
 		Append(deleteAllBtn);
 	}
 
 	private void StartBtn_OnClick(UIMouseEvent evt, UIElement listeningElement)
 	{
-		if (CameraSystem.Playing) {
+		if (CameraSystem.IsPlaying()) {
 			CameraSystem.StopPlaying();
 			EditorCameraSystem.CenterToPosition(Main.LocalPlayer.position);
 		}
 		else {
-			CameraSystem.Playing = true;
+			CameraSystem.StartPlaying();
 		}
 	}
 
@@ -130,7 +130,7 @@ internal class CameraControlUI : UIState
 	{
 		UISystem.CurveEditUI.curves.Clear();
 		progressBar.Progress = 0;
-		CameraSystem.Playing = false;
+		CameraSystem.StopPlaying();
 	}
 
 	private void EraseBtn_OnClick(UIMouseEvent evt, UIElement listeningElement)
@@ -191,12 +191,16 @@ internal class CameraControlUI : UIState
 
 			Vector2 pos = CameraSystem.GetPositionAtPercentage(progressBar.Progress);
 
-			spriteBatch.DrawRectangleBorder(new Rectangle(
+			var borderRect = new Rectangle(
 					(int)((pos.X - Main.screenPosition.X - center.X) * z + offset.X),
 					(int)((pos.Y - Main.screenPosition.Y - center.Y) * z + offset.Y),
 					(int)(sw * z),
-					(int)(sh * z)),
-				2, Color.Gray);
+					(int)(sh * z));
+
+			spriteBatch.DrawRectangleBorder(borderRect, 2, Color.Gray);
+
+			spriteBatch.DrawStraightLine(borderRect.Left, borderRect.Top + borderRect.Height / 2, borderRect.Width, 2, Color.Red);
+			spriteBatch.DrawStraightLine(borderRect.Left + borderRect.Width / 2, borderRect.Top, 2, borderRect.Height, Color.Red);
 		}
 
 		if (selectNpcToTrack) {

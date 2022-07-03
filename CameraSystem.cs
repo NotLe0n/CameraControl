@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CameraControl.UI.Elements.Curves;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,20 +10,11 @@ namespace CameraControl;
 
 internal class CameraSystem : ModSystem
 {
-	public static bool Playing {
-		get => _playing;
-		set {
-			Reset();
-			UpdateProgressbar(0, 0);
-			_playing = value;
-		}
-	}
-
 	public static bool repeat;
 	public static bool bounce;
 	public static Entity trackingEntity = null;
 
-	private static bool _playing;
+	private static bool playing;
 	private static bool reverse;
 	private static float speed = 10;
 	private static float t;
@@ -35,7 +27,7 @@ internal class CameraSystem : ModSystem
 	{
 		base.ModifyScreenPosition();
 
-		if (!_playing) {
+		if (!playing) {
 			// track NPC if not playing
 			if (trackingEntity != null)
 				CenterCameraTo(trackingEntity.position);
@@ -47,7 +39,7 @@ internal class CameraSystem : ModSystem
 
 		// don't track curve if there are none
 		if (curves.Count == 0) {
-			_playing = false;
+			playing = false;
 
 			// reset progress to 0
 			progress = 0f;
@@ -101,7 +93,7 @@ internal class CameraSystem : ModSystem
 		// if we reached the end of the last curve, reset currentCurve and stop playing
 		if (currentCurve >= curves.Count) {
 			currentCurve = 0;
-			_playing = repeat || bounce; // if repeat or bounce isn't set: stop playing
+			playing = repeat || bounce; // if repeat or bounce isn't set: stop playing
 			progress = 0;
 
 			// if bounce is set: reverse tracking
@@ -137,7 +129,7 @@ internal class CameraSystem : ModSystem
 		// if we reached the end of the last curve, reset currentCurve and stop playing
 		if (currentCurve < 0) {
 			currentCurve = curves.Count - 1;
-			_playing = repeat || bounce; // if repeat or bounce isn't set: stop playing
+			playing = repeat || bounce; // if repeat or bounce isn't set: stop playing
 
 			Reset();
 		}
@@ -149,7 +141,7 @@ internal class CameraSystem : ModSystem
 		UISystem.CameraControlUI.progressBar.Progress = progress / segments / curveCount;
 	}
 
-	public static void Reset()
+	private static void Reset()
 	{
 		t = 0;
 		segment = 0;
@@ -171,13 +163,51 @@ internal class CameraSystem : ModSystem
 
 	public static Vector2 GetPositionAtPercentage(float percentage)
 	{
-		return UISystem.CurveEditUI.curves[currentCurve].points[segment];
+		if (!playing)
+			return Vector2.Zero;
+
+		int curveCount = UISystem.CurveEditUI.curves.Count;
+		var curve = UISystem.CurveEditUI.curves[Math.Min((int)(percentage * curveCount), curveCount - 1)];
+		float t = (percentage * curveCount) % 1;
+
+		if (curve is BezierCurve) {
+			return BezierCurve.CalculateBezierCurve(t, curve.controls[0], curve.controls[1], curve.controls[2], curve.controls[3]);
+		}
+		else if (curve is SplineCurve s) {
+			if (t <= 0.3333f) {
+				return SplineCurve.CalculateCatmullRomSpline(t * 3 % 1, s.prevPoint, s.controls[0], s.controls[1], s.controls[2]);
+			}
+			else if (t <= 0.6666) {
+				return SplineCurve.CalculateCatmullRomSpline(t * 3 % 1, s.controls[0], s.controls[1], s.controls[2], s.controls[3]);
+			}
+			else {
+				return SplineCurve.CalculateCatmullRomSpline(t * 3 % 1, s.controls[1], s.controls[2], s.controls[3], s.nextPoint);
+			}
+		}
+		else {
+			return Vector2.Zero;
+		}
+	}
+
+	public static void StartPlaying()
+	{
+		playing = true;
 	}
 
 	public static void StopPlaying()
 	{
 		Reset();
 		UpdateProgressbar(0, 0);
-		_playing = false;
+		playing = false;
+	}
+
+	public static void TogglePause()
+	{
+		playing = !playing;
+	}
+
+	public static bool IsPlaying()
+	{
+		return playing;
 	}
 }

@@ -31,7 +31,7 @@ class SplineCurve : Curve
 	}
 
 	// Calculates the point at t on a Catmull-Rom spline
-	private static Vector2 CalculateCatmullRomSpline(float t, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
+	public static Vector2 CalculateCatmullRomSpline(float t, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
 	{
 		return 0.5f * ((2 * p1) +
 		(-p0 + p2) * t +
