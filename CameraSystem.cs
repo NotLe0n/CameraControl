@@ -42,7 +42,7 @@ internal class CameraSystem : ModSystem
 
 			// reset progress to 0
 			progress = 0f;
-			UpdateProgressbar(0, 0);
+			UpdateProgressbar();
 			return;
 		}
 
@@ -64,8 +64,7 @@ internal class CameraSystem : ModSystem
 			TrackBackwards(curves, start, end); // update variables
 		}
 
-		// Update progressbar
-		UpdateProgressbar(curves[currentCurve].points.Length, curves.Count);
+		UpdateProgressbar();
 	}
 
 	private static void TrackForwards(List<UI.Elements.Curves.Curve> curves, Vector2 start, Vector2 end) // "UI.Elements.Curves" because of conflict with XNA
@@ -134,14 +133,18 @@ internal class CameraSystem : ModSystem
 		}
 	}
 
-	// calculate progress percentage and update progressbar
-	private static void UpdateProgressbar(int segments, int curveCount)
+	public static void SetProgress(float progress)
 	{
-		if (curveCount == 0) {
-			return;
-		}
+		int curveCount = UISystem.CurveEditUI.curves.Count;
+		currentCurve = Math.Min((int)(progress * curveCount), curveCount - 1);
+		segment = (int)(progress * UI.Elements.Curves.Curve.NumSteps * curveCount) % (UI.Elements.Curves.Curve.NumSteps + 1);
+		CameraSystem.progress = progress * UI.Elements.Curves.Curve.NumSteps * curveCount;
+	}
 
-		UISystem.CameraControlUI.progressBar.Progress = progress / segments / curveCount;
+	// calculate progress percentage and update progressbar
+	private static void UpdateProgressbar()
+	{
+		UISystem.CameraControlUI.progressBar.Progress = progress / UI.Elements.Curves.Curve.NumSteps / UISystem.CurveEditUI.curves.Count;
 	}
 
 	private static void Reset()
@@ -151,7 +154,7 @@ internal class CameraSystem : ModSystem
 		currentCurve = 0;
 		progress = 0;
 		reverse = false;
-		UpdateProgressbar(0, 0);
+		UpdateProgressbar();
 	}
 
 	public static void SetSpeed(float speed)
@@ -197,7 +200,6 @@ internal class CameraSystem : ModSystem
 	public static void StopPlaying()
 	{
 		Reset();
-		UpdateProgressbar(0, 0);
 		playing = false;
 	}
 

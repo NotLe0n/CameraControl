@@ -30,13 +30,13 @@ internal class CameraControlUI : UIState
 		Append(progressBar);
 
 		var startStopBtn = new UIMenuButton(
-				() => $"{path + (!CameraSystem.IsPlaying() ? "stopBtn" : "playBtn")}",
+				() => $"{path + (CameraSystem.IsPlaying() ? "pauseBtn" : "playBtn")}",
 				() => $"{(CameraSystem.IsPlaying() ? "Stop" : "Start")} Tracking") {
 			Top = new(-120, 1),
 			Left = new(0, hAlign),
 			toggleAction = () => CameraSystem.IsPlaying() // draw frame only while tracking the curve
 		};
-		startStopBtn.OnClick += StartBtn_OnClick;
+		startStopBtn.OnClick += (_, __) =>CameraSystem.TogglePause();
 		Append(startStopBtn);
 
 		var repeatBtn = new UIMenuButton(path + "repeatBtn", "Repeat") {
@@ -52,13 +52,6 @@ internal class CameraControlUI : UIState
 		};
 		bounceBtn.OnClick += (_, __) => CameraSystem.bounce = !CameraSystem.bounce;
 		Append(bounceBtn);
-
-		var pauseBtn = new UIMenuButton(path + "pauseBtn", "Pause") {
-			Top = new(-70, 1),
-			Left = new(50, hAlign)
-		};
-		pauseBtn.OnClick += (_, __) => CameraSystem.TogglePause();
-		Append(pauseBtn);
 
 		///////
 
@@ -113,17 +106,6 @@ internal class CameraControlUI : UIState
 		};
 		deleteAllBtn.OnClick += DeleteAllBtn_OnClick;
 		Append(deleteAllBtn);
-	}
-
-	private void StartBtn_OnClick(UIMouseEvent evt, UIElement listeningElement)
-	{
-		if (CameraSystem.IsPlaying()) {
-			CameraSystem.StopPlaying();
-			EditorCameraSystem.CenterToPosition(Main.LocalPlayer.position);
-		}
-		else {
-			CameraSystem.StartPlaying();
-		}
 	}
 
 	private void DeleteAllBtn_OnClick(UIMouseEvent evt, UIElement listeningElement)

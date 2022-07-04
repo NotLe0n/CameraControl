@@ -45,16 +45,16 @@ internal class UIMenuButton : UIImageButton
 		SoundEngine.PlaySound(SoundID.MenuTick); // tick sound
 		_toggled = !_toggled;
 
-		if (dynamicTexture != null) {
-			SetImage(Utils.RequestAsset(dynamicTexture()));
-		}
-
 		base.Click(evt);
 	}
 
 	protected override void DrawSelf(SpriteBatch spriteBatch)
 	{
 		base.DrawSelf(spriteBatch);
+
+		if (dynamicTexture != null) {
+			SetImage(Utils.RequestAsset(dynamicTexture()));
+		}
 
 		// draw a white frame
 		if (toggleAction()) {

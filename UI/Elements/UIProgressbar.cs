@@ -26,11 +26,18 @@ public class UIProgressbar : UIElement
 	public override void Update(GameTime gameTime)
 	{
 		base.Update(gameTime);
+
+		// prevents the Progress from being NaN or Infinity
+		if (!float.IsFinite(Progress)) {
+			Progress = 0;
+		}
+
 		if (holding && UISystem.CurveEditUI.curves.Count > 0) {
 			var dim = GetDimensions().ToRectangle();
 			var p = MathHelper.Clamp((Main.MouseScreen.X - dim.X) / dim.Width, 0, 1);
 			Progress = p;
 
+			CameraSystem.SetProgress(p);
 			EditorCameraSystem.CenterToPosition(CameraSystem.GetPositionAtPercentage(p));
 		}
 	}
