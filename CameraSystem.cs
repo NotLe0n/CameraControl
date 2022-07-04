@@ -168,7 +168,7 @@ internal class CameraSystem : ModSystem
 	{
 		int curveCount = UISystem.CurveEditUI.curves.Count;
 		var curve = UISystem.CurveEditUI.curves[Math.Min((int)(percentage * curveCount), curveCount - 1)];
-		float t = (percentage * curveCount) % 1;
+		float t = (percentage == 1) ? 1 : (percentage * curveCount) % 1;
 
 		if (curve is BezierCurve) {
 			return BezierCurve.CalculateBezierCurve(t, curve.controls[0], curve.controls[1], curve.controls[2], curve.controls[3]);
