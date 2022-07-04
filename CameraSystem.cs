@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
+using System.Linq;
 
 namespace CameraControl;
 
@@ -16,7 +17,7 @@ internal class CameraSystem : ModSystem
 	private static Vector2? lockPosition;
 	private static bool playing;
 	private static bool reverse;
-	private static float speed = 10;
+	private static float currentSpeedMult = 1;
 	private static float t;
 	private static int currentCurve;
 	private static int segment;
@@ -54,6 +55,15 @@ internal class CameraSystem : ModSystem
 		Vector2 start = curves[currentCurve].points[segment];
 		Vector2 end;
 
+		// change speed
+		float p = progress / UI.Elements.Curves.Curve.NumSteps / UISystem.CurveEditUI.curves.Count;
+		foreach (var keyframe in UISystem.CameraControlUI.progressBar.keyframes) {
+			float diff = keyframe.Key - p;
+			if (diff is < 0.005f and > -0.005f) {
+				currentSpeedMult = keyframe.Value;
+			}
+		}
+
 		if (!reverse) {
 			bool segmentEnd = segment + 1 >= curves[currentCurve].points.Length; // is the last segment reached?
 			end = segmentEnd ? start : curves[currentCurve].points[segment + 1]; // if yes, go to start, if no go to next segment
@@ -77,7 +87,7 @@ internal class CameraSystem : ModSystem
 		Vector2 middle = new Vector2(Main.screenWidth, Main.screenHeight) / 2; // the middle of the screen
 
 		// increase lerp value
-		t += 0.1f / Vector2.Distance(start, end) * speed;
+		t += 0.1f / (Vector2.Distance(start, end) / (currentSpeedMult * 10f));
 
 		// if we reached the end of a line segment, reset t and go to the next segment
 		if (t > 1 || Main.screenPosition == end - middle) {
@@ -113,7 +123,7 @@ internal class CameraSystem : ModSystem
 	private static void TrackBackwards(List<UI.Elements.Curves.Curve> curves, Vector2 start, Vector2 end)
 	{
 		// increase lerp value
-		t -= 0.1f / Math.Max(Vector2.Distance(start, end), 1) * speed;
+		t -= 0.1f / Math.Max(Vector2.Distance(start, end), 1) * currentSpeedMult;
 
 		// if we reached the end of a line segment, reset t and go to the next segment
 		if (t <= 0) {
@@ -159,12 +169,8 @@ internal class CameraSystem : ModSystem
 		currentCurve = 0;
 		progress = 0;
 		reverse = false;
+		currentSpeedMult = 1;
 		UpdateProgressbar();
-	}
-
-	public static void SetSpeed(float speed)
-	{
-		CameraSystem.speed = speed;
 	}
 
 	private static void CenterCameraTo(Vector2 position)
@@ -226,5 +232,24 @@ internal class CameraSystem : ModSystem
 	public static bool IsLocked()
 	{
 		return lockPosition is not null;
+	}
+
+	public static void ChangeSpeed(float amount)
+	{
+		var keyframes = UISystem.CameraControlUI.progressBar.keyframes;
+
+		float p = progress / UI.Elements.Curves.Curve.NumSteps / UISystem.CurveEditUI.curves.Count;
+
+		foreach (var keyframe in keyframes) {
+			if (keyframe.Key > p) {
+				var prevIndex = keyframes.ToList().IndexOf(keyframe) - 1;
+				var previous = keyframes.ElementAt(prevIndex);
+				keyframes[previous.Key] *= amount;
+
+				return;
+			}		
+		}
+
+		keyframes[keyframes.Last().Key] *= amount;
 	}
 }

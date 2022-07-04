@@ -29,6 +29,8 @@ internal class CameraControlUI : UIState
 		};
 		Append(progressBar);
 
+		////// Top Left
+
 		var startStopBtn = new UIMenuButton(
 				() => $"{path + (CameraSystem.IsPlaying() ? "pauseBtn" : "playBtn")}",
 				() => $"{(CameraSystem.IsPlaying() ? "Stop" : "Start")} Tracking") {
@@ -53,24 +55,44 @@ internal class CameraControlUI : UIState
 		bounceBtn.OnClick += (_, __) => CameraSystem.bounce = !CameraSystem.bounce;
 		Append(bounceBtn);
 
+		////// Bottom Left
+
+		var entityBtn = new UIMenuButton(path + "entityBtn",
+			() => $" {(CameraSystem.trackingEntity == null ? "Start" : "Stop")} Tracking Entity") {
+			Top = new(-70, 1),
+			Left = new(25, hAlign),
+			toggleAction = () => CameraSystem.trackingEntity != null // draw frame only while tracking a npc
+		};
+		entityBtn.OnClick += EntityBtn_OnClick;
+		Append(entityBtn);
+
 		var lockBtn = new UIMenuButton(path + "lockBtn", "Lock Screen") {
 			Top = new(-70, 1),
-			Left = new(80, hAlign),
+			Left = new(75, hAlign),
 			toggleAction = () => CameraSystem.IsLocked()
 		};
 		lockBtn.OnClick += (_, __) => CameraSystem.ToggleLock();
 		Append(lockBtn);
 
-		///////
+		/////// Top Middle 
 
-		var showViewBtn = new UIMenuButton(path + "showViewBtn", "Show View Range") {
+		var speedUpBtn = new UIMenuButton(path + "speedUpBtn", "Increase Tracking Speed") {
 			Top = new(-120, 1),
-			Left = new(180, hAlign)
+			Left = new(225, hAlign),
+			toggleAction = () => false
 		};
-		showViewBtn.OnClick += ShowViewBtn_OnClick;
-		Append(showViewBtn);
+		speedUpBtn.OnClick += (_, __) => CameraSystem.ChangeSpeed(2f);
+		Append(speedUpBtn);
 
-		//////
+		var speedDownBtn = new UIMenuButton(path + "speedDownBtn", "Decrease Tracking Speed") {
+			Top = new(-120, 1),
+			Left = new(175, hAlign),
+			toggleAction = () => false
+		};
+		speedDownBtn.OnClick += (_, __) => CameraSystem.ChangeSpeed(0.5f);
+		Append(speedDownBtn);
+
+		////// Top Right
 
 		var bezierBtn = new UIMenuButton(path + "bezierBtn", "Draw Bezier curve") {
 			Top = new(-120, 1),
@@ -88,20 +110,19 @@ internal class CameraControlUI : UIState
 		splineBtn.OnClick += (_, __) => ToggleCurveType(CurveEditUI.CurveType.Spline);
 		Append(splineBtn);
 
-		var entityBtn = new UIMenuButton(path + "entityBtn",
-			() => $" {(CameraSystem.trackingEntity == null ? "Start" : "Stop")} Tracking Entity") {
+		var showViewBtn = new UIMenuButton(path + "showViewBtn", "Show View Range") {
 			Top = new(-120, 1),
-			Left = new(400, hAlign),
-			toggleAction = () => CameraSystem.trackingEntity != null // draw frame only while tracking a npc
+			Left = new(400, hAlign)
 		};
-		entityBtn.OnClick += EntityBtn_OnClick;
-		Append(entityBtn);
+		showViewBtn.OnClick += ShowViewBtn_OnClick;
+		Append(showViewBtn);
 
-		//////
+
+		////// Bottom Right 
 
 		var eraseBtn = new UIMenuButton(path + "eraseBtn", "Erase curve") {
 			Top = new(-70, 1),
-			Left = new(320, hAlign),
+			Left = new(315, hAlign),
 			toggleAction = () => UISystem.CurveEditUI.erasing
 		};
 		eraseBtn.OnClick += EraseBtn_OnClick;
@@ -114,6 +135,7 @@ internal class CameraControlUI : UIState
 		};
 		deleteAllBtn.OnClick += DeleteAllBtn_OnClick;
 		Append(deleteAllBtn);
+
 	}
 
 	private void DeleteAllBtn_OnClick(UIMouseEvent evt, UIElement listeningElement)

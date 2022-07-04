@@ -1,3 +1,9 @@
 displayName = Camera Control
 author = NotLe0n
 version = 0.1
+hideCode = false
+hideResources = false
+includeSource = false
+buildIgnore = vs/*, *.csproj, *.sln, *.pidb, *.userprefs, *.user, obj/*, bin/*
+side = Client
+homepage = https://github.com/NotLe0n/CameraControl

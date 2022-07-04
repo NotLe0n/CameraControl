@@ -1,31 +1,38 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.UI;
+using System.Linq;
 
 namespace CameraControl.UI.Elements;
 
 public class UIProgressbar : UIElement
 {
-	//public event Action<float> OnHold;
 	public float Progress { get; set; }
 	private bool holding;
 	private readonly Asset<Texture2D> _texture;
 	private readonly Asset<Texture2D> _innerTexture;
 
+	public Dictionary<float, float> keyframes; // [percentage] = speed
+	private int hoveringOverKeyframe;
+
 	public UIProgressbar()
 	{
 		Progress = 0;
+		keyframes = new() { { 0, 1 } };
 		_texture = Main.Assets.Request<Texture2D>("Images/UI/Scrollbar");
 		_innerTexture = Main.Assets.Request<Texture2D>("Images/UI/ScrollbarInner");
+
+		hoveringOverKeyframe = -1;
 	}
 
 	public override void Update(GameTime gameTime)
 	{
 		base.Update(gameTime);
+		var dim = GetDimensions().ToRectangle();
 
 		// prevents the Progress from being NaN or Infinity
 		if (!float.IsFinite(Progress)) {
@@ -33,12 +40,27 @@ public class UIProgressbar : UIElement
 		}
 
 		if (holding && UISystem.CurveEditUI.curves.Count > 0) {
-			var dim = GetDimensions().ToRectangle();
 			var p = MathHelper.Clamp((Main.MouseScreen.X - dim.X) / dim.Width, 0, 1);
 			Progress = p;
 
 			CameraSystem.SetProgress(p);
 			EditorCameraSystem.CenterToPosition(CameraSystem.GetPositionAtPercentage(p));
+		}
+
+		if (IsMouseHovering) {
+			int i = 0;
+			foreach (var keyframe in keyframes) {			
+				var p = MathHelper.Clamp((Main.MouseScreen.X - dim.X) / dim.Width, 0, 1);
+
+				if ((keyframe.Key - p) is < 0.005f and > -0.005f) {
+					hoveringOverKeyframe = i;
+					break;
+				}
+				else {
+					hoveringOverKeyframe = -1;
+				}
+				i++;
+			}
 		}
 	}
 
@@ -53,9 +75,36 @@ public class UIProgressbar : UIElement
 
 		// draw percentage and prevent item use on hover
 		if (IsMouseHovering) {
-			Main.hoverItemName = $"{Progress:P}"; // formatted as Percent
+			if (hoveringOverKeyframe == -1) {
+				Main.hoverItemName = $"{Progress:P}"; // formatted as Percent
+			}
+			else {
+				Main.hoverItemName = $"Keyframe #{hoveringOverKeyframe + 1}\nSpeed: {keyframes.ElementAt(hoveringOverKeyframe).Value}";
+			}
 			Main.LocalPlayer.mouseInterface = true;
 		}
+
+		foreach (var keyframe in keyframes) {
+			var x = (int)(keyframe.Key * dim.Width) + dim.X;
+			spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(x - 2, dim.Y + 5, 5, 10), Color.Red);
+		}
+	}
+
+	public override void RightClick(UIMouseEvent evt)
+	{
+		base.RightClick(evt);
+
+		var dim = GetDimensions().ToRectangle();
+		var p = MathHelper.Clamp((Main.MouseScreen.X - dim.X) / dim.Width, 0, 1);
+
+		foreach (var keyframe in keyframes) {
+			if ((keyframe.Key - p) is < 0.005f and > -0.005f && keyframe.Key != 0) {
+				keyframes.Remove(keyframe.Key, out _);
+				return;
+			}
+		}
+		keyframes.Add(p, 1);
+		keyframes = new Dictionary<float, float>(keyframes.OrderBy(x => x.Key));
 	}
 
 	public override void MouseDown(UIMouseEvent evt)
