@@ -36,7 +36,7 @@ internal class CameraControlUI : UIState
 			Left = new(0, hAlign),
 			toggleAction = () => CameraSystem.IsPlaying() // draw frame only while tracking the curve
 		};
-		startStopBtn.OnClick += (_, __) =>CameraSystem.TogglePause();
+		startStopBtn.OnClick += (_, __) => CameraSystem.TogglePause();
 		Append(startStopBtn);
 
 		var repeatBtn = new UIMenuButton(path + "repeatBtn", "Repeat") {
@@ -52,6 +52,14 @@ internal class CameraControlUI : UIState
 		};
 		bounceBtn.OnClick += (_, __) => CameraSystem.bounce = !CameraSystem.bounce;
 		Append(bounceBtn);
+
+		var lockBtn = new UIMenuButton(path + "lockBtn", "Lock Screen") {
+			Top = new(-70, 1),
+			Left = new(80, hAlign),
+			toggleAction = () => CameraSystem.IsLocked()
+		};
+		lockBtn.OnClick += (_, __) => CameraSystem.ToggleLock();
+		Append(lockBtn);
 
 		///////
 

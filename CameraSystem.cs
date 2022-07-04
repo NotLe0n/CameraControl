@@ -13,6 +13,7 @@ internal class CameraSystem : ModSystem
 	public static bool bounce;
 	public static Entity trackingEntity = null;
 
+	private static Vector2? lockPosition;
 	private static bool playing;
 	private static bool reverse;
 	private static float speed = 10;
@@ -28,8 +29,12 @@ internal class CameraSystem : ModSystem
 
 		if (!playing) {
 			// track NPC if not playing
-			if (trackingEntity != null)
+			if (lockPosition.HasValue) {
+				Main.screenPosition =  lockPosition.Value;
+			}
+			else if (trackingEntity != null) {
 				CenterCameraTo(trackingEntity.position);
+			}
 
 			return;
 		}
@@ -211,5 +216,15 @@ internal class CameraSystem : ModSystem
 	public static bool IsPlaying()
 	{
 		return playing;
+	}
+
+	public static void ToggleLock()
+	{
+		lockPosition = lockPosition is null ? Main.screenPosition : null;
+	}
+
+	public static bool IsLocked()
+	{
+		return lockPosition is not null;
 	}
 }
