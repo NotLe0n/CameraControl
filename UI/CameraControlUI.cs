@@ -1,6 +1,7 @@
 ﻿using CameraControl.UI.Elements;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -14,7 +15,7 @@ internal class CameraControlUI : UIState
 	public UIProgressbar progressBar; // progressbar instance
 
 	private bool drawView; // if true, draws big box representing the screen at a tracking location with 100% zoom
-	private bool selectNpcToTrack; // if true, draws green boxes around npcs
+	public static bool SelectNpcToTrack { get; private set; } // if true, draws green boxes around npcs
 
 	private const float hAlign = 0.35f; // position of the first button
 	private const string path = "CameraControl/UI/Assets/"; // common path for all UI Assets
@@ -160,8 +161,8 @@ internal class CameraControlUI : UIState
 	{
 		// select entity if you aren't tracking one
 		if (CameraSystem.trackingEntity == null) {
-			selectNpcToTrack = !selectNpcToTrack;
-			if (selectNpcToTrack) {
+			SelectNpcToTrack = !SelectNpcToTrack;
+			if (SelectNpcToTrack) {
 				Main.NewText("Click on the enity you want to track");
 			}
 
@@ -213,21 +214,15 @@ internal class CameraControlUI : UIState
 			spriteBatch.DrawStraightLine(borderRect.Left + borderRect.Width / 2, borderRect.Top, 2, borderRect.Height, Color.Red);
 		}
 
-		if (selectNpcToTrack) {
-			// all NPCs, Items, and Projectiles
-			IEnumerable<Entity> enities = Main.npc.AsEnumerable<Entity>().Concat(Main.item).Concat(Main.projectile);
-
-			// loop through all active entities
-			foreach (Entity entity in enities.Where(e => e.active)) {
-				var p = entity.position - Main.screenPosition;
-				spriteBatch.Draw(TextureAssets.MagicPixel.Value, p, entity.Hitbox, Color.Green * .5f, 0, Vector2.Zero, EditorCameraSystem.zoom, SpriteEffects.None, 0);
-			}
-		}
+		// Draw zoom level
+		spriteBatch.DrawString(FontAssets.MouseText.Value, $"Zoom: {EditorCameraSystem.zoom:P0}", new Vector2(Main.screenWidth * hAlign + 175, Main.screenHeight - 60), Color.White);
 	}
 
 	public override void Update(GameTime gameTime)
 	{
-		if (selectNpcToTrack) {
+		base.Update(gameTime);
+
+		if (SelectNpcToTrack) {
 			// all NPCs, Items, and Projectiles
 			IEnumerable<Entity> enities = Main.npc.AsEnumerable<Entity>().Concat(Main.item).Concat(Main.projectile);
 
@@ -235,12 +230,11 @@ internal class CameraControlUI : UIState
 			foreach (Entity entity in enities.Where(e => e.active)) {
 
 				// if mouse clicked inside hitbox of the entity
-				if (entity.Hitbox.Contains(Main.MouseWorld.ToPoint()) && Main.mouseLeft) {
-					selectNpcToTrack = false; // stop selecting
+				if (entity.Hitbox.Contains(EditorCameraSystem.RealMouseWorld.ToPoint()) && Main.mouseLeft) {
+					SelectNpcToTrack = false; // stop selecting
 					CameraSystem.trackingEntity = entity; // start tracking
 				}
 			}
 		}
-		base.Update(gameTime);
 	}
 }

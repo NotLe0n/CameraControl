@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.UI;
@@ -61,14 +62,25 @@ class CurveEditUI : UIState
 	public override void Draw(SpriteBatch spriteBatch)
 	{
 		// Debug draw
-		spriteBatch.DrawString(FontAssets.MouseText.Value, "Curve Count: " + curves.Count, new Vector2(10, 20), Color.White);
+		/*spriteBatch.DrawString(FontAssets.MouseText.Value, "Curve Count: " + curves.Count, new Vector2(10, 20), Color.White);
 		spriteBatch.DrawString(FontAssets.MouseText.Value, "Mode: " + (drawingMode ? "Draw" : "Select"), new Vector2(10, 50), Color.White);
-		spriteBatch.DrawString(FontAssets.MouseText.Value, "Curve Type: " + curveType, new Vector2(10, 80), Color.White);
+		spriteBatch.DrawString(FontAssets.MouseText.Value, "Curve Type: " + curveType, new Vector2(10, 80), Color.White);*/
 
 		// draw all curves
 		_drawingCurve?.Draw(spriteBatch);
 		foreach (var curve in curves) {
 			curve.Draw(spriteBatch);
+		}
+
+		if (CameraControlUI.SelectNpcToTrack) {
+			// all NPCs, Items, and Projectiles
+			IEnumerable<Entity> enities = Main.npc.AsEnumerable<Entity>().Concat(Main.item).Concat(Main.projectile);
+
+			// loop through all active entities
+			foreach (Entity entity in enities.Where(e => e.active)) {
+				// draw green box
+				spriteBatch.Draw(TextureAssets.MagicPixel.Value, (entity.position - Main.screenPosition), new Rectangle(0, 0, entity.Hitbox.Width, entity.Hitbox.Height), Color.Green * .5f, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+			}
 		}
 	}
 
