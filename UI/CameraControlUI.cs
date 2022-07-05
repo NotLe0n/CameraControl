@@ -44,14 +44,16 @@ internal class CameraControlUI : UIState
 
 		var repeatBtn = new UIMenuButton(path + "repeatBtn", "Repeat") {
 			Top = new(-120, 1),
-			Left = new(50, hAlign)
+			Left = new(50, hAlign),
+			toggleAction = () => CameraSystem.repeat
 		};
 		repeatBtn.OnClick += (_, __) => CameraSystem.repeat = !CameraSystem.repeat;
 		Append(repeatBtn);
 
 		var bounceBtn = new UIMenuButton(path + "bounceBtn", "Bounce") {
 			Top = new(-120, 1),
-			Left = new(100, hAlign)
+			Left = new(100, hAlign),
+			toggleAction = () => CameraSystem.bounce
 		};
 		bounceBtn.OnClick += (_, __) => CameraSystem.bounce = !CameraSystem.bounce;
 		Append(bounceBtn);
