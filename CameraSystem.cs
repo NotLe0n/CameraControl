@@ -123,7 +123,7 @@ internal class CameraSystem : ModSystem
 	private static void TrackBackwards(List<UI.Elements.Curves.Curve> curves, Vector2 start, Vector2 end)
 	{
 		// increase lerp value
-		t -= 0.1f / Math.Max(Vector2.Distance(start, end), 1) * currentSpeedMult;
+		t -= 0.1f / (Math.Max(Vector2.Distance(start, end), 1) / (currentSpeedMult * 10f));
 
 		// if we reached the end of a line segment, reset t and go to the next segment
 		if (t <= 0) {
