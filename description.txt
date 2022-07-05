@@ -1,1 +1,10 @@
-Camera Control is a pretty cool mod, it does...this. Modify this file with a description of your mod.
+Camera Control is the perfect tool for making showcase or youtube videos!
+It allows you to move the camera along a predefined path, lock the camera to a fixed point 
+or make the camera follow an NPC, Item or Projectile.
+
+Please visit the Steam Workshop page of this mod (click the workshop button below) for a detailed guide with pictures on how to use the mod.
+
+This mod is open source on my GitHub (homepage link).
+If you have any questions, issues or bugs contact me on my discord server: https://discord.gg/NX4DVzz2v6
+
+This mod has been split of from the "Better Zoom" mod. If you're looking for a mod to just zoom in/out more, check it out.

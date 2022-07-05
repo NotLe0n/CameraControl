@@ -1,0 +1,77 @@
+﻿[h1]Camera Control[/h1]
+
+Camera Control is the perfect tool for making showcase or youtube videos!
+It allows you to move the camera along a predefined path, lock the camera to a fixed point 
+or make the camera follow an NPC, Item or Projectile.
+
+This mod is open source on my [url=https://github.com/NotLe0n/CameraControl]GitHub[/url].
+If you have any questions, issues or bugs contact me on my [url=https://discord.gg/NX4DVzz2v6]discord server[/url]
+
+This mod has been split of from the [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2562953970]"Better Zoom"[/url] mod. If you're looking for a mod to just zoom in/out more, check it out.
+
+[h2] How to use [/h2]
+To use this mod you need to enter [b]Editor mode[/b] by pressing the Keybind, which you have to set first.
+In [b]Editor mode[/b], you can freely move the camera with W, A, S or D and zoom in and out using the mouse wheel.
+The "Show View Range" button will draw a box to show what the player will see at 100% zoom.
+
+You'll also see the UI at the bottom of the screen in [b]Editor mode[/b].
+[img]https://i.imgur.com/Vv2IOWd.png[/img]
+
+Currently you are in [b]Select mode[/b] - to start placing tracks enter [b]Drawing mode[/b], by clicking on one of the two "Place curve" buttons.
+[img]https://i.imgur.com/J4JrVo9.png[/img]
+
+You can select between Bézier and (Catmul-Rom) Spline curves.
+The difference is that Bézier curves will create a smooth curve, where the points of the curve don't have to hit all control points.
+In comparison, a Spline curve will go through all control points.
+[img]https://i.imgur.com/OH6pxNH.png[/img]
+
+After selecting a curve, start drawing by clicking and dragging the mouse to the desired location. 
+When you're done placing, go back to [b]Select mode[/b], by clicking on the currently selected curve type
+and move the control points to create the curve you want.
+[img]https://i.imgur.com/BTBQkeU.gif[/img]
+
+You can erase curves by clicking on "Erase curve". You will enter [b]Eraser mode[/b] where clicking on a curve will remove it.
+To remove all curves at once, click on "Delete all curves".
+
+Now we have a track the camera will follow. Press the Play button to start or resume. 
+Press it again and the camera will pause at it's current location along the curve.
+[img]https://i.imgur.com/LISgnhz.gif[/img]
+
+There are a few settings for what will happen at the end. The default behavior is stopping at the end. 
+If you toggle "Repeat", the camera will go back to the start. 
+If you toggle "Bounce", the camera will track backwards towards the start and then start again.
+[img]https://i.imgur.com/yIjclws.gif[/img]
+
+While the camera is tracking, a progress bar will show you the percentage to competion. 
+You can quckly scrub through the curve by holding left click and dragging the scroll bar.
+[img]https://i.imgur.com/VNwCdeQ.gif[/img]
+
+To change the speed, use the Speed up and Speed down buttons. This will double or halve the speed of the previous keyframe. 
+This will get us to the Keyframe system.
+[img]https://i.imgur.com/BvP8SoJ.png[/img]
+
+[h3]Keyframes[/h3]
+There is always at least one Keyframe present - at the very start. Keyframe are shown on the progress bar as red rectangles.
+To create a keyframe right click the progress bar at the desired location. To remove a keyframe, right click the keyframe.
+[img]https://i.imgur.com/WWdYLej.gif[/img]
+
+The tracker will change speed when it passes over a keyframe.
+
+[h3]Track Enities[/h3]
+Click on the "Track Entity" button and then select the entity, by clicking on its hitbox (highlighted in green). To stop tracking, hit the button again.
+You can also cancel the selection process, by clicking on the button again while the hitboxes are shown.
+[img]https://i.imgur.com/NpQpV9B.gif[/img]
+
+[h3]Lock camera[/h3]
+You can lock the camera with the "Lock camera" button. The camera will be locked to the current editor camera location, once you leave [b]Editor mode[/b].
+[img]https://i.imgur.com/cpV8UcF.gif[/img]
+
+[h2]Hotkeys[/h2]
+There are hotkeys for:
+[list]
+[*] Play/Pause
+[*] Toggle Repeat
+[*] Toggle Bounce
+[*] Lock Screen
+[/list]
+You have to set them to a key to use them.
