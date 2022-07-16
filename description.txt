@@ -1,4 +1,4 @@
-Camera Control is the perfect tool for making showcase or youtube videos!
+Camera Control is the perfect tool for making showcase, cinematic or youtube videos!
 It allows you to move the camera along a predefined path, lock the camera to a fixed point 
 or make the camera follow an NPC, Item or Projectile.
 

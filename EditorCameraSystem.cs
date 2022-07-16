@@ -9,7 +9,7 @@ namespace CameraControl;
 
 internal class EditorCameraSystem : ModSystem
 {
-	public static Vector2 RealMouseWorld => Main.GameViewMatrix.Translation + Main.screenPosition + (Main.MouseScreen / Main.GameViewMatrix.Zoom);
+	public static Vector2 RealMouseWorld => Main.GameViewMatrix.Translation + Main.screenPosition + (Main.MouseScreen / Main.GameViewMatrix.Zoom * Main.UIScale);
 
 	private static Vector2 position;
 
