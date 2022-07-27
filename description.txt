@@ -8,3 +8,6 @@ This mod is open source on my GitHub (homepage link).
 If you have any questions, issues or bugs contact me on my discord server: https://discord.gg/NX4DVzz2v6
 
 This mod has been split of from the "Better Zoom" mod. If you're looking for a mod to just zoom in/out more, check it out.
+
+Special Thanks to:
+[c/66EEFF:Pyroknight], for the trashcan sprite!

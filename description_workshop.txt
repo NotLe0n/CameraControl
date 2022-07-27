@@ -75,3 +75,6 @@ There are hotkeys for:
 [*] Lock Screen
 [/list]
 You have to set them to a key to use them.
+
+Special Thanks to:
+Pyroknight, for the trashcan sprite!
