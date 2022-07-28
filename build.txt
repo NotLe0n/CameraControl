@@ -1,6 +1,6 @@
 displayName = Camera Control
 author = NotLe0n
-version = 0.1.1
+version = 0.1.2
 hideCode = false
 hideResources = false
 includeSource = false
