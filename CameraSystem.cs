@@ -175,7 +175,7 @@ internal class CameraSystem : ModSystem
 
 	private static void CenterCameraTo(Vector2 position)
 	{
-		Main.screenPosition = position - (new Vector2(Main.screenWidth, Main.screenHeight) / 2);
+		Main.screenPosition = new Vector2((int)position.X, (int)position.Y) - (new Vector2(Main.screenWidth, Main.screenHeight) / 2);
 	}
 
 	public static Vector2 GetPositionAtPercentage(float percentage)
