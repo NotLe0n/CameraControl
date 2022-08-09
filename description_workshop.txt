@@ -76,5 +76,10 @@ There are hotkeys for:
 [/list]
 You have to set them to a key to use them.
 
+[h2]Saving and Loading curve and keyframe data[/h2]
+Clicking on the "Save curve data to file" button will create a new .json file with the current curve data inside the directory "Documents\My Games\Terraria\tModLoader\CameraControlData".
+Then with the "Load curve data" button, you can select a file and load it's data into the world. Loading curve data will override all curves and keyframes.
+[img]https://i.imgur.com/U9XStte.png[/img]
+
 Special Thanks to:
 Pyroknight, for the trashcan sprite!

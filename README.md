@@ -16,7 +16,7 @@ The "Show View Range" button will draw a box to show what the player will see at
 You'll also see the UI at the bottom of the screen in **Editor mode**.<br>
 ![](https://i.imgur.com/Vv2IOWd.png)
 
-Currently you are in **Select mode** - to start placing tracks enter **Drawing mode**, by clicking on one of the two "Place curve" buttons.
+Currently you are in **Select mode** - to start placing tracks enter **Drawing mode**, by clicking on one of the two "Place curve" buttons.<br>
 ![draw](https://i.imgur.com/J4JrVo9.png)
 
 You can select between Bézier and (Catmul-Rom) Spline curves.
@@ -72,3 +72,8 @@ There are hotkeys for:
 * Toggle Bounce
 * Lock Screen
 You have to set them to a key to use them.
+
+## Saving and Loading curve and keyframe data
+Clicking on the "Save curve data to file" button will create a new .json file with the current curve data inside the directory "Documents\My Games\Terraria\tModLoader\CameraControlData".
+Then with the "Load curve data" button, you can select a file and load it's data into the world. Loading curve data will override all curves and keyframes.<br>
+![saveload](https://i.imgur.com/U9XStte.png)
