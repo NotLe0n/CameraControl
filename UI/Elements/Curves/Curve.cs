@@ -20,6 +20,11 @@ public abstract class Curve
 	public const int NumSteps = (int)(1.0f / Factor);
 	public const float Factor = 0.00666f;
 
+	protected Curve(Vector2[] controls)
+	{
+		this.controls = controls;
+	}
+
 	protected Curve(Vector2 start, Vector2 end)
 	{
 		// add control points at start, 30%, 70% and end

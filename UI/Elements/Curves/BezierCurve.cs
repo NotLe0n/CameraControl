@@ -6,6 +6,12 @@ namespace CameraControl.UI.Elements.Curves;
 
 class BezierCurve : Curve
 {
+	public BezierCurve(params Vector2[] controls) : base(controls)
+	{
+		points = new Vector2[NumSteps + 1];
+		PopulatePoints();
+	}
+
 	public BezierCurve(Vector2 start, Vector2 end) : base(start, end)
 	{
 		points = new Vector2[NumSteps + 1];

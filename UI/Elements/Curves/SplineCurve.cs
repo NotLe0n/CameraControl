@@ -7,6 +7,15 @@ class SplineCurve : Curve
 	public Vector2 prevPoint;
 	public Vector2 nextPoint;
 
+	public SplineCurve(params Vector2[] controls) : base(controls)
+	{
+		prevPoint = controls[0];
+		nextPoint = controls[3];
+
+		points = new Vector2[NumSteps + 1];
+		PopulatePoints();
+	}
+
 	public SplineCurve(Vector2 start, Vector2 end) : base(start, end)
 	{
 		prevPoint = controls[0];

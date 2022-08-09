@@ -120,6 +120,12 @@ internal class CameraControlUI : UIState
 		showViewBtn.OnClick += ShowViewBtn_OnClick;
 		Append(showViewBtn);
 
+		var loadBtn = new UIMenuButton(path + "loadBtn", "Load curve data") {
+			Top = new(-120, 1),
+			Left = new(450, hAlign)
+		};
+		loadBtn.OnClick += (_, __) => SaveLoad.LoadCurveData();
+		Append(loadBtn);
 
 		////// Bottom Right 
 
@@ -139,6 +145,13 @@ internal class CameraControlUI : UIState
 		deleteAllBtn.OnClick += DeleteAllBtn_OnClick;
 		Append(deleteAllBtn);
 
+		var saveBtn = new UIMenuButton(path + "saveBtn", "Save curve data to file") {
+			Top = new(-70, 1),
+			Left = new(450, hAlign),
+			toggleAction = () => false
+		};
+		saveBtn.OnClick += (_, __) => SaveLoad.SaveCurveData();
+		Append(saveBtn);
 	}
 
 	private void DeleteAllBtn_OnClick(UIMouseEvent evt, UIElement listeningElement)
