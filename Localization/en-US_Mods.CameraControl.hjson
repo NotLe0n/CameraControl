@@ -1,0 +1,27 @@
+Keybinds: {
+	openUI.DisplayName: Open UI
+	Play/Pause.DisplayName: Play/Pause
+	ToggleBounce.DisplayName: Toggle Bounce
+	ToggleRepeat.DisplayName: Toggle Repeat
+	ToggleLockScreen.DisplayName: Toggle Lock Screen
+}
+
+UI: {
+	Repeat: Repeat
+	Bounce: Bounce
+	Lock: Lock screen
+	IncreaseSpeed: Increase tracking speed
+	DecreaseSpeed: Decrease tracking speed
+	Bezier: Draw Bezier curve
+	Spline: Draw Spline curve
+	ShowView: Show view range
+	Erase: Erase curve
+	DeleteAll: Delete all curves
+	LoadData: Load curve data
+	SaveData: Save curve data to file
+	ClickToTrack: Click on the entity you want to track
+	StartTracking: Start tracking
+	StopTracking: Stop tracking
+	StartTrackingEntity: Start tracking entity
+	StopTrackingEntity: Stop tracking entity
+}

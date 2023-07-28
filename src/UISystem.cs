@@ -17,7 +17,7 @@ internal class UISystem : ModSystem
 
 	public static bool EditorVisible { get; private set; }
 
-	public override void Load()
+	public override void OnLocalizationsLoaded()
 	{
 		CurveEditUI = new CurveEditUI();
 		CameraControlUI = new CameraControlUI();
@@ -26,8 +26,8 @@ internal class UISystem : ModSystem
 		ccUI.SetState(CameraControlUI);
 		ceUI = new UserInterface();
 		ceUI.SetState(CurveEditUI);
-
-		base.Load();
+		
+		base.OnLocalizationsLoaded();
 	}
 
 	public override void Unload()

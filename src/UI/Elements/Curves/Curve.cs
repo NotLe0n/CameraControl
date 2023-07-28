@@ -73,9 +73,9 @@ public abstract class Curve
 		var min = Vector2.Min(Vector2.Min(controls[0], controls[1]), Vector2.Min(controls[2], controls[3]));
 		var max = Vector2.Max(Vector2.Max(controls[0], controls[1]), Vector2.Max(controls[2], controls[3]));
 		bool inside = EditorCameraSystem.RealMouseWorld.X >= min.X &&
-					  EditorCameraSystem.RealMouseWorld.X <= min.X + max.X &&
-					  EditorCameraSystem.RealMouseWorld.Y >= min.Y &&
-					  EditorCameraSystem.RealMouseWorld.Y <= min.Y + max.Y;
+		              EditorCameraSystem.RealMouseWorld.X <= min.X + max.X &&
+		              EditorCameraSystem.RealMouseWorld.Y >= min.Y &&
+		              EditorCameraSystem.RealMouseWorld.Y <= min.Y + max.Y;
 
 		if (!inside) {
 			_isHovering = false;
@@ -87,12 +87,12 @@ public abstract class Curve
 		Vector2 closestPoint = default;
 		float bestDistance = float.MaxValue;
 		float currentDistance;
-		for (int i = 0; i < points.Length; i++) {
+		foreach (var point in points) {
 			// find closest point on the curve to the mouse
-			currentDistance = Vector2.DistanceSquared(points[i], EditorCameraSystem.RealMouseWorld);
+			currentDistance = Vector2.DistanceSquared(point, EditorCameraSystem.RealMouseWorld);
 			if (currentDistance < bestDistance) {
 				bestDistance = currentDistance;
-				closestPoint = points[i];
+				closestPoint = point;
 			}
 		}
 

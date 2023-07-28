@@ -14,11 +14,11 @@ internal class HotkeySystem : ModSystem
 
 	public override void Load()
 	{
-		OpenUIHotkey = KeybindLoader.RegisterKeybind(Mod, "open UI", Keys.N);
+		OpenUIHotkey = KeybindLoader.RegisterKeybind(Mod, "openUI", Keys.N);
 		PlayPauseHotkey = KeybindLoader.RegisterKeybind(Mod, "Play/Pause", Keys.None);
-		BounceHotkey = KeybindLoader.RegisterKeybind(Mod, "Toggle Bounce", Keys.None);
-		RepeatHotkey = KeybindLoader.RegisterKeybind(Mod, "Toggle Repeat", Keys.None);
-		LockScreenHotkey = KeybindLoader.RegisterKeybind(Mod, "Toggle Lock Screen", Keys.None);
+		BounceHotkey = KeybindLoader.RegisterKeybind(Mod, "ToggleBounce", Keys.None);
+		RepeatHotkey = KeybindLoader.RegisterKeybind(Mod, "ToggleRepeat", Keys.None);
+		LockScreenHotkey = KeybindLoader.RegisterKeybind(Mod, "ToggleLockScreen", Keys.None);
 
 		base.Load();
 	}

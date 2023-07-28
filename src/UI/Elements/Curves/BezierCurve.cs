@@ -4,7 +4,7 @@ using System;
 
 namespace CameraControl.UI.Elements.Curves;
 
-class BezierCurve : Curve
+internal class BezierCurve : Curve
 {
 	public BezierCurve(params Vector2[] controls) : base(controls)
 	{

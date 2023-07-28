@@ -107,15 +107,15 @@ public class UIProgressbar : UIElement
 		keyframes = new Dictionary<float, float>(keyframes.OrderBy(x => x.Key));
 	}
 
-	public override void MouseDown(UIMouseEvent evt)
+	public override void LeftMouseDown(UIMouseEvent evt)
 	{
-		base.MouseDown(evt);
+		base.LeftMouseDown(evt);
 		holding = true;
 	}
 
-	public override void MouseUp(UIMouseEvent evt)
+	public override void LeftMouseUp(UIMouseEvent evt)
 	{
-		base.MouseUp(evt);
+		base.LeftMouseUp(evt);
 		holding = false;
 	}
 

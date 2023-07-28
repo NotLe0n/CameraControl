@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 using System.Linq;
+using Curve = CameraControl.UI.Elements.Curves.Curve;
 
 namespace CameraControl;
 
@@ -56,10 +57,9 @@ internal class CameraSystem : ModSystem
 		Vector2 end;
 
 		// change speed
-		float p = progress / UI.Elements.Curves.Curve.NumSteps / UISystem.CurveEditUI.curves.Count;
+		float p = progress / Curve.NumSteps / UISystem.CurveEditUI.curves.Count;
 		foreach (var keyframe in UISystem.CameraControlUI.progressBar.keyframes) {
-			float diff = keyframe.Key - p;
-			if (diff is < 0.005f and > -0.005f) {
+			if (Math.Abs(keyframe.Key - p) < 0.005f) {
 				currentSpeedMult = keyframe.Value;
 			}
 		}
@@ -82,7 +82,7 @@ internal class CameraSystem : ModSystem
 		UpdateProgressbar();
 	}
 
-	private static void TrackForwards(List<UI.Elements.Curves.Curve> curves, Vector2 start, Vector2 end) // "UI.Elements.Curves" because of conflict with XNA
+	private static void TrackForwards(List<Curve> curves, Vector2 start, Vector2 end) // "UI.Elements.Curves" because of conflict with XNA
 	{
 		Vector2 middle = new Vector2(Main.screenWidth, Main.screenHeight) / 2; // the middle of the screen
 
@@ -120,7 +120,7 @@ internal class CameraSystem : ModSystem
 		}
 	}
 
-	private static void TrackBackwards(List<UI.Elements.Curves.Curve> curves, Vector2 start, Vector2 end)
+	private static void TrackBackwards(List<Curve> curves, Vector2 start, Vector2 end)
 	{
 		// increase lerp value
 		t -= 0.1f / (Math.Max(Vector2.Distance(start, end), 1) / (currentSpeedMult * 10f));
@@ -148,18 +148,18 @@ internal class CameraSystem : ModSystem
 		}
 	}
 
-	public static void SetProgress(float progress)
+	public static void SetProgress(float newProgress)
 	{
 		int curveCount = UISystem.CurveEditUI.curves.Count;
-		currentCurve = Math.Min((int)(progress * curveCount), curveCount - 1);
-		segment = (int)(progress * UI.Elements.Curves.Curve.NumSteps * curveCount) % (UI.Elements.Curves.Curve.NumSteps + 1);
-		CameraSystem.progress = progress * UI.Elements.Curves.Curve.NumSteps * curveCount;
+		currentCurve = Math.Min((int)(newProgress * curveCount), curveCount - 1);
+		segment = (int)(newProgress * Curve.NumSteps * curveCount) % (Curve.NumSteps + 1);
+		progress = newProgress * Curve.NumSteps * curveCount;
 	}
 
 	// calculate progress percentage and update progressbar
 	private static void UpdateProgressbar()
 	{
-		UISystem.CameraControlUI.progressBar.Progress = progress / UI.Elements.Curves.Curve.NumSteps / UISystem.CurveEditUI.curves.Count;
+		UISystem.CameraControlUI.progressBar.Progress = progress / Curve.NumSteps / UISystem.CurveEditUI.curves.Count;
 	}
 
 	private static void Reset()
@@ -182,25 +182,23 @@ internal class CameraSystem : ModSystem
 	{
 		int curveCount = UISystem.CurveEditUI.curves.Count;
 		var curve = UISystem.CurveEditUI.curves[Math.Min((int)(percentage * curveCount), curveCount - 1)];
-		float t = (percentage == 1) ? 1 : (percentage * curveCount) % 1;
+		float t0 = (Math.Abs(percentage - 1) < 0.001f) ? 1 : (percentage * curveCount) % 1;
 
 		if (curve is BezierCurve) {
-			return BezierCurve.CalculateBezierCurve(t, curve.controls[0], curve.controls[1], curve.controls[2], curve.controls[3]);
+			return BezierCurve.CalculateBezierCurve(t0, curve.controls[0], curve.controls[1], curve.controls[2], curve.controls[3]);
 		}
-		else if (curve is SplineCurve s) {
-			if (t <= 0.3333f) {
-				return SplineCurve.CalculateCatmullRomSpline(t * 3 % 1, s.prevPoint, s.controls[0], s.controls[1], s.controls[2]);
+
+		if (curve is SplineCurve s) {
+			if (t0 <= 0.3333f) {
+				return SplineCurve.CalculateCatmullRomSpline(t0 * 3 % 1, s.prevPoint, s.controls[0], s.controls[1], s.controls[2]);
 			}
-			else if (t <= 0.6666) {
-				return SplineCurve.CalculateCatmullRomSpline(t * 3 % 1, s.controls[0], s.controls[1], s.controls[2], s.controls[3]);
+
+			if (t0 <= 0.6666) {
+				return SplineCurve.CalculateCatmullRomSpline(t0 * 3 % 1, s.controls[0], s.controls[1], s.controls[2], s.controls[3]);
 			}
-			else {
-				return SplineCurve.CalculateCatmullRomSpline(t * 3 % 1, s.controls[1], s.controls[2], s.controls[3], s.nextPoint);
-			}
+			return SplineCurve.CalculateCatmullRomSpline(t0 * 3 % 1, s.controls[1], s.controls[2], s.controls[3], s.nextPoint);
 		}
-		else {
-			return Vector2.Zero;
-		}
+		return Vector2.Zero;
 	}
 
 	public static void StartPlaying()
@@ -238,11 +236,11 @@ internal class CameraSystem : ModSystem
 	{
 		var keyframes = UISystem.CameraControlUI.progressBar.keyframes;
 
-		float p = progress / UI.Elements.Curves.Curve.NumSteps / UISystem.CurveEditUI.curves.Count;
+		float p = progress / Curve.NumSteps / UISystem.CurveEditUI.curves.Count;
 
 		foreach (var keyframe in keyframes) {
 			if (keyframe.Key > p) {
-				var prevIndex = keyframes.ToList().IndexOf(keyframe) - 1;
+				int prevIndex = keyframes.ToList().IndexOf(keyframe) - 1;
 				var previous = keyframes.ElementAt(prevIndex);
 				keyframes[previous.Key] *= amount;
 

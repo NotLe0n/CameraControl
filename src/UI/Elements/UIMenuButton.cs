@@ -19,7 +19,7 @@ internal class UIMenuButton : UIImageButton
 
 	private readonly Func<string> dynamicTexture;
 	private bool _toggled;
-	private readonly Texture2D frame = Utils.RequestAsset("CameraControl/UI/Assets/selected").Value;
+	private readonly Texture2D frame = Utils.RequestAsset("CameraControl/Assets/selected").Value;
 
 	public UIMenuButton(string texture, string hoverText) : base(Utils.RequestAsset(texture))
 	{
@@ -40,12 +40,12 @@ internal class UIMenuButton : UIImageButton
 		toggleAction ??= () => _toggled; // if no special action is set, the frame should toggle on and off on every click
 	}
 
-	public override void Click(UIMouseEvent evt)
+	public override void LeftClick(UIMouseEvent evt)
 	{
 		SoundEngine.PlaySound(SoundID.MenuTick); // tick sound
 		_toggled = !_toggled;
 
-		base.Click(evt);
+		base.LeftClick(evt);
 	}
 
 	protected override void DrawSelf(SpriteBatch spriteBatch)

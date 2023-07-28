@@ -40,7 +40,7 @@ internal class EditorCameraSystem : ModSystem
 
 	private int lastScrollwheel;
 	public static float zoom = 1;
-	public override void ModifyTransformMatrix(ref SpriteViewMatrix Transform)
+	public override void ModifyTransformMatrix(ref SpriteViewMatrix transform)
 	{
 		if (UISystem.EditorVisible) {
 			PlayerInput.LockVanillaMouseScroll("ModLoader/UIGrid");
@@ -49,10 +49,10 @@ internal class EditorCameraSystem : ModSystem
 			zoom += val;
 			zoom = MathHelper.Clamp(zoom, 0.4f, 2f);
 
-			Transform.Zoom = new Vector2(zoom);
+			transform.Zoom = new Vector2(zoom);
 		}
 
-		base.ModifyTransformMatrix(ref Transform);
+		base.ModifyTransformMatrix(ref transform);
 		lastScrollwheel = Mouse.GetState().ScrollWheelValue;
 	}
 

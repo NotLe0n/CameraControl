@@ -8,24 +8,25 @@ using System.Text;
 using System.Text.Json;
 using Terraria;
 using Terraria.Utilities.FileBrowser;
+using Curve = CameraControl.UI.Elements.Curves.Curve;
 
 namespace CameraControl;
 
 internal class SaveLoad
 {
-	private class SaveData
+	private struct SaveData
 	{
-		public CurveData[] curves { get; set; }
-		public Dictionary<float, float> keyframes { get; set; }
+		public IEnumerable<CurveData> curves;
+		public Dictionary<float, float> keyframes;
 	}
 
 	private struct CurveData
 	{
-		public string curveType { get; set; }
-		public Vector2 c0 { get; set; }
-		public Vector2 c1 { get; set; }
-		public Vector2 c2 { get; set; }
-		public Vector2 c3 { get; set; }
+		public string curveType;
+		public Vector2 c0;
+		public Vector2 c1;
+		public Vector2 c2;
+		public Vector2 c3;
 	}
 
 	public static void SaveCurveData()
@@ -43,7 +44,7 @@ internal class SaveLoad
 		string json = JsonSerializer.Serialize(data, new JsonSerializerOptions() { 
 			WriteIndented = true,	// make it pretty
 			IncludeFields = true	// to serialize the X and Y fields of a Vector2
-		}).Replace("  ", "\t");	// use tabs as indentaion
+		}).Replace("  ", "\t");	// use tabs as indentation
 
 		// create CameraControlData directory
 		var directory = Directory.CreateDirectory(Path.Combine(Main.SavePath, "CameraControlData"));
@@ -61,40 +62,47 @@ internal class SaveLoad
 	public static void LoadCurveData()
 	{
 		string path = FileBrowser.OpenFilePanel("Select Data file", "json");
-		if (path != null) {
-			string json = File.ReadAllText(path, Encoding.Unicode);
+		if (string.IsNullOrEmpty(path)) {
+			return;
+		}
 
-			SaveData saveData = JsonSerializer.Deserialize<SaveData>(json, new JsonSerializerOptions() {
-				IncludeFields = true	// deserialize the X and Y fields of a Vector2
-			});
+		string json = File.ReadAllText(path, Encoding.Unicode);
 
-			// set keyframe data
-			UISystem.CameraControlUI.progressBar.keyframes = saveData.keyframes;
+		SaveData saveData = JsonSerializer.Deserialize<SaveData>(json, new JsonSerializerOptions() {
+			IncludeFields = true  // deserialize the X and Y fields of a Vector2
+		});
 
-			// set curve data
-			UISystem.CurveEditUI.curves.Clear();
-			foreach (var curve in saveData.curves) {
-				switch (curve.curveType) {
-					case "Bezier":
-						UISystem.CurveEditUI.curves.Add(new BezierCurve(curve.c0, curve.c1, curve.c2, curve.c3));
-						break;
-					case "Spline":
-						UISystem.CurveEditUI.curves.Add(new SplineCurve(curve.c0, curve.c1, curve.c2, curve.c3));
-						break;
-				}
+		// set keyframe data
+		UISystem.CameraControlUI.progressBar.keyframes = saveData.keyframes;
+		
+		// set curve data
+		UISystem.CurveEditUI.curves.Clear();
+		foreach (var curve in saveData.curves) {
+			var curvePoints = new[] { curve.c0, curve.c1, curve.c2, curve.c3 };
+			
+			Curve newCurve = null;
+			switch (curve.curveType) {
+				case "Bezier":
+					newCurve = new SplineCurve(curvePoints);
+					break;
+				case "Spline":
+					newCurve = new SplineCurve(curvePoints);
+					break;
 			}
+
+			UISystem.CurveEditUI.curves.Add(newCurve);
 		}
 	}
 
-	private static CurveData[] CurveToDataFormat(List<UI.Elements.Curves.Curve> curves)
+	private static IEnumerable<CurveData> CurveToDataFormat(IEnumerable<Curve> curves)
 	{
-		CurveData[] data = curves.Select(curve => new CurveData() {
+		var data = curves.Select(curve => new CurveData {
 			curveType = curve is BezierCurve ? "Bezier" : "Spline",
 			c0 = curve.controls[0],
 			c1 = curve.controls[1],
 			c2 = curve.controls[2],
 			c3 = curve.controls[3]
-		}).ToArray();
+		});
 
 		return data;
 	}

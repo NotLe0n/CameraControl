@@ -6,20 +6,22 @@ using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.Localization;
 using Terraria.UI;
 
 namespace CameraControl.UI;
 
 internal class CameraControlUI : UIState
 {
-	public UIProgressbar progressBar; // progressbar instance
+	public readonly UIProgressbar progressBar; // progressbar instance
 
 	private bool drawView; // if true, draws big box representing the screen at a tracking location with 100% zoom
-	public static bool SelectNpcToTrack { get; private set; } // if true, draws green boxes around npcs
+	public static bool SelectNpcToTrack { get; private set; } // if true, draws green boxes around NPCs
 
 	private const float hAlign = 0.35f; // position of the first button
-	private const string path = "CameraControl/UI/Assets/"; // common path for all UI Assets
-
+	private const string AssetPath = "CameraControl/Assets/"; // common path for all UI Assets
+	private const string LocalePath = "Mods.CameraControl.UI.";
+	
 	public CameraControlUI()
 	{
 		progressBar = new UIProgressbar() {
@@ -33,124 +35,124 @@ internal class CameraControlUI : UIState
 		////// Top Left
 
 		var startStopBtn = new UIMenuButton(
-				() => $"{path + (CameraSystem.IsPlaying() ? "pauseBtn" : "playBtn")}",
-				() => $"{(CameraSystem.IsPlaying() ? "Stop" : "Start")} Tracking") {
+				() => $"{AssetPath + (CameraSystem.IsPlaying() ? "pauseBtn" : "playBtn")}",
+				() => Language.GetTextValue(LocalePath + (CameraSystem.IsPlaying() ? "Start" : "Stop") + "Tracking")) {
 			Top = new(-120, 1),
 			Left = new(0, hAlign),
-			toggleAction = () => CameraSystem.IsPlaying() // draw frame only while tracking the curve
+			toggleAction = CameraSystem.IsPlaying // draw frame only while tracking the curve
 		};
-		startStopBtn.OnClick += (_, __) => CameraSystem.TogglePause();
+		startStopBtn.OnLeftClick += (_, _) => CameraSystem.TogglePause();
 		Append(startStopBtn);
 
-		var repeatBtn = new UIMenuButton(path + "repeatBtn", "Repeat") {
+		var repeatBtn = new UIMenuButton(AssetPath + "repeatBtn", Language.GetTextValue(LocalePath + "Repeat")) {
 			Top = new(-120, 1),
 			Left = new(50, hAlign),
 			toggleAction = () => CameraSystem.repeat
 		};
-		repeatBtn.OnClick += (_, __) => CameraSystem.repeat = !CameraSystem.repeat;
+		repeatBtn.OnLeftClick += (_, _) => CameraSystem.repeat = !CameraSystem.repeat;
 		Append(repeatBtn);
 
-		var bounceBtn = new UIMenuButton(path + "bounceBtn", "Bounce") {
+		var bounceBtn = new UIMenuButton(AssetPath + "bounceBtn", Language.GetTextValue(LocalePath + "Bounce")) {
 			Top = new(-120, 1),
 			Left = new(100, hAlign),
 			toggleAction = () => CameraSystem.bounce
 		};
-		bounceBtn.OnClick += (_, __) => CameraSystem.bounce = !CameraSystem.bounce;
+		bounceBtn.OnLeftClick += (_, _) => CameraSystem.bounce = !CameraSystem.bounce;
 		Append(bounceBtn);
 
 		////// Bottom Left
 
-		var entityBtn = new UIMenuButton(path + "entityBtn",
-			() => $" {(CameraSystem.trackingEntity == null ? "Start" : "Stop")} Tracking Entity") {
+		var entityBtn = new UIMenuButton(AssetPath + "entityBtn",
+			() => Language.GetTextValue(LocalePath + (CameraSystem.trackingEntity == null ? "Start" : "Stop") + "TrackingEntity")) {
 			Top = new(-70, 1),
 			Left = new(25, hAlign),
 			toggleAction = () => CameraSystem.trackingEntity != null // draw frame only while tracking a npc
 		};
-		entityBtn.OnClick += EntityBtn_OnClick;
+		entityBtn.OnLeftClick += EntityBtn_OnClick;
 		Append(entityBtn);
 
-		var lockBtn = new UIMenuButton(path + "lockBtn", "Lock Screen") {
+		var lockBtn = new UIMenuButton(AssetPath + "lockBtn", Language.GetTextValue(LocalePath + "Lock")) {
 			Top = new(-70, 1),
 			Left = new(75, hAlign),
-			toggleAction = () => CameraSystem.IsLocked()
+			toggleAction = CameraSystem.IsLocked
 		};
-		lockBtn.OnClick += (_, __) => CameraSystem.ToggleLock();
+		lockBtn.OnLeftClick += (_, _) => CameraSystem.ToggleLock();
 		Append(lockBtn);
 
 		/////// Top Middle 
 
-		var speedUpBtn = new UIMenuButton(path + "speedUpBtn", "Increase Tracking Speed") {
+		var speedUpBtn = new UIMenuButton(AssetPath + "speedUpBtn", Language.GetTextValue(LocalePath + "IncreaseSpeed")) {
 			Top = new(-120, 1),
 			Left = new(225, hAlign),
 			toggleAction = () => false
 		};
-		speedUpBtn.OnClick += (_, __) => CameraSystem.ChangeSpeed(2f);
+		speedUpBtn.OnLeftClick += (_, _) => CameraSystem.ChangeSpeed(2f);
 		Append(speedUpBtn);
 
-		var speedDownBtn = new UIMenuButton(path + "speedDownBtn", "Decrease Tracking Speed") {
+		var speedDownBtn = new UIMenuButton(AssetPath + "speedDownBtn", Language.GetTextValue(LocalePath + "DecreaseSpeed")) {
 			Top = new(-120, 1),
 			Left = new(175, hAlign),
 			toggleAction = () => false
 		};
-		speedDownBtn.OnClick += (_, __) => CameraSystem.ChangeSpeed(0.5f);
+		speedDownBtn.OnLeftClick += (_, _) => CameraSystem.ChangeSpeed(0.5f);
 		Append(speedDownBtn);
 
 		////// Top Right
 
-		var bezierBtn = new UIMenuButton(path + "bezierBtn", "Draw Bezier curve") {
+		var bezierBtn = new UIMenuButton(AssetPath + "bezierBtn", Language.GetTextValue(LocalePath + "Bezier")) {
 			Top = new(-120, 1),
 			Left = new(300, hAlign),
 			toggleAction = () => UISystem.CurveEditUI.curveType == CurveEditUI.CurveType.Bezier && UISystem.CurveEditUI.drawingMode
 		};
-		bezierBtn.OnClick += (_, __) => ToggleCurveType(CurveEditUI.CurveType.Bezier);
+		bezierBtn.OnLeftClick += (_, _) => ToggleCurveType(CurveEditUI.CurveType.Bezier);
 		Append(bezierBtn);
 
-		var splineBtn = new UIMenuButton(path + "splineBtn", "Draw Spline curve") {
+		var splineBtn = new UIMenuButton(AssetPath + "splineBtn", Language.GetTextValue(LocalePath + "Spline")) {
 			Top = new(-120, 1),
 			Left = new(350, hAlign),
 			toggleAction = () => UISystem.CurveEditUI.curveType == CurveEditUI.CurveType.Spline && UISystem.CurveEditUI.drawingMode
 		};
-		splineBtn.OnClick += (_, __) => ToggleCurveType(CurveEditUI.CurveType.Spline);
+		splineBtn.OnLeftClick += (_, _) => ToggleCurveType(CurveEditUI.CurveType.Spline);
 		Append(splineBtn);
 
-		var showViewBtn = new UIMenuButton(path + "showViewBtn", "Show View Range") {
+		var showViewBtn = new UIMenuButton(AssetPath + "showViewBtn", Language.GetTextValue(LocalePath + "ShowView")) {
 			Top = new(-120, 1),
 			Left = new(400, hAlign)
 		};
-		showViewBtn.OnClick += ShowViewBtn_OnClick;
+		showViewBtn.OnLeftClick += ShowViewBtn_OnClick;
 		Append(showViewBtn);
 
-		var loadBtn = new UIMenuButton(path + "loadBtn", "Load curve data") {
+		var loadBtn = new UIMenuButton(AssetPath + "loadBtn", Language.GetTextValue(LocalePath + "LoadData")) {
 			Top = new(-120, 1),
 			Left = new(450, hAlign)
 		};
-		loadBtn.OnClick += (_, __) => SaveLoad.LoadCurveData();
+		loadBtn.OnLeftClick += (_, _) => SaveLoad.LoadCurveData();
 		Append(loadBtn);
 
 		////// Bottom Right 
 
-		var eraseBtn = new UIMenuButton(path + "eraseBtn", "Erase curve") {
+		var eraseBtn = new UIMenuButton(AssetPath + "eraseBtn", Language.GetTextValue(LocalePath + "Erase")) {
 			Top = new(-70, 1),
 			Left = new(315, hAlign),
 			toggleAction = () => UISystem.CurveEditUI.erasing
 		};
-		eraseBtn.OnClick += EraseBtn_OnClick;
+		eraseBtn.OnLeftClick += EraseBtn_OnClick;
 		Append(eraseBtn);
 
-		var deleteAllBtn = new UIMenuButton(path + "deleteAllBtn", "Delete all curves") {
+		var deleteAllBtn = new UIMenuButton(AssetPath + "deleteAllBtn", Language.GetTextValue(LocalePath + "DeleteAll")) {
 			Top = new(-70, 1),
 			Left = new(370, hAlign),
 			toggleAction = () => false
 		};
-		deleteAllBtn.OnClick += DeleteAllBtn_OnClick;
+		deleteAllBtn.OnLeftClick += DeleteAllBtn_OnClick;
 		Append(deleteAllBtn);
 
-		var saveBtn = new UIMenuButton(path + "saveBtn", "Save curve data to file") {
+		var saveBtn = new UIMenuButton(AssetPath + "saveBtn", Language.GetTextValue(LocalePath + "SaveData")) {
 			Top = new(-70, 1),
 			Left = new(450, hAlign),
 			toggleAction = () => false
 		};
-		saveBtn.OnClick += (_, __) => SaveLoad.SaveCurveData();
+		saveBtn.OnLeftClick += (_, _) => SaveLoad.SaveCurveData();
 		Append(saveBtn);
 	}
 
@@ -178,7 +180,7 @@ internal class CameraControlUI : UIState
 		if (CameraSystem.trackingEntity == null) {
 			SelectNpcToTrack = !SelectNpcToTrack;
 			if (SelectNpcToTrack) {
-				Main.NewText("Click on the enity you want to track");
+				Main.NewText(Language.GetTextValue(LocalePath + "ClickToTrack"));
 			}
 
 			return;
